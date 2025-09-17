@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erro do Servidor - Connexa</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/errors/error.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+</head>
+<body>
+    <div class="error-container">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Connexa Logo" class="logo">
+        <h1>500</h1>
+        <h2>Erro do Servidor</h2>
+        <p>Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde.</p>
+        <a href="/" class="btn-voltar">Voltar para a página inicial</a>
+    </div>
+</body>
+</html>

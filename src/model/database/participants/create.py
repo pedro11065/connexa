@@ -1,6 +1,6 @@
 import psycopg2
 
-from ...connect import connect_database
+from ..connect import connect_database
 
 def db_create_user_company(company_id, user_id, user_access_level):
     db_login = connect_database()  # Coleta os dados para conexão

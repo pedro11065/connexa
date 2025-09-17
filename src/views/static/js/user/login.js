@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     const loginForm = document.getElementById("loginForm");
-    const loginButton = loginForm.querySelector(".login-section-button");
+    const loginButton = loginForm.querySelector(".login-btn");
 
     // Evento de envio do formulário
     loginForm.addEventListener('submit', async (event) => {
@@ -16,8 +16,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const password = document.getElementById('password').value;
 
         const loginData = {
-            "email": email,
-            "senha": password
+            email: email,
+            senha: password  // Changed from "senha" to "password" to match form field
         };
 
         try {
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
             displayError('message', 'Um erro inesperado ocorreu, sentimos muito.');
         } finally {
             loginButton.disabled = false;
-            loginButton.textContent = "Login";
+            loginButton.textContent = "Entrar";  // Changed to match button text in HTML
         }
     });
 });

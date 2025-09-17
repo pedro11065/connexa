@@ -1,6 +1,6 @@
 -- Tabela para armazenar informações dos usuários
 CREATE TABLE usuarios (
-   id SERIAL PRIMARY KEY,
+   id UUID PRIMARY KEY,
    nome TEXT NOT NULL,
    email TEXT NOT NULL UNIQUE,
    senha_hash TEXT NOT NULL,
@@ -13,8 +13,8 @@ CREATE TABLE usuarios (
 
 -- Tabela para armazenar grupos de estudo
 CREATE TABLE grupos_estudo (
-   id SERIAL PRIMARY KEY,
-   usuario_criador_id INTEGER NOT NULL,
+   id UUID PRIMARY KEY,
+   usuario_criador_id UUID NOT NULL,
    materia TEXT NOT NULL,
    objetivo TEXT,
    local TEXT CHECK (local IN ('online', 'presencial')) NOT NULL,
@@ -28,9 +28,9 @@ CREATE TABLE grupos_estudo (
 
 -- Tabela para armazenar participantes dos grupos
 CREATE TABLE participantes (
-   id SERIAL PRIMARY KEY,
-   grupo_id INTEGER NOT NULL,
-   usuario_id INTEGER NOT NULL,
+   id UUID PRIMARY KEY,
+   grupo_id UUID NULL,
+   usuario_id UUID NOT NULL,
    data_entrada TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    UNIQUE (grupo_id, usuario_id),
    FOREIGN KEY (grupo_id) REFERENCES grupos_estudo(id) ON DELETE CASCADE,
@@ -39,9 +39,9 @@ CREATE TABLE participantes (
 
 -- Tabela para armazenar mensagens dos grupos
 CREATE TABLE mensagens (
-   id SERIAL PRIMARY KEY,
-   grupo_id INTEGER NOT NULL,
-   usuario_id INTEGER NOT NULL,
+   id UUID PRIMARY KEY,
+   grupo_id UUID NOT NULL,
+   usuario_id UUID NOT NULL,
    conteudo TEXT NOT NULL,
    data_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    FOREIGN KEY (grupo_id) REFERENCES grupos_estudo(id) ON DELETE CASCADE,

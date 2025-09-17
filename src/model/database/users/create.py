@@ -24,7 +24,7 @@ def db_create_user(nome, email, senha, curso, periodo, status): # Cria um usuár
     
     # Insere os dados principais do usuário para armazenar na tabela
    
-    cur.execute(f"INSERT INTO usuarios (id, nome, email, senha, curso, periodo, status) VALUES ('{id}', '{nome}', '{email}', '{senha}', '{curso}', '{periodo}', '{status}');")
+    cur.execute(f"INSERT INTO usuarios (id, nome, email, senha_hash, curso, periodo, status) VALUES ('{id}', '{nome}', '{email}', '{senha}', '{curso}', '{periodo}', '{status}');")
 
     # Confirma as mudanças
     conn.commit()

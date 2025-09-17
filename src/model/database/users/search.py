@@ -32,7 +32,7 @@ def db_search_user(search_data):
             "id": db_data[0],
             "nome": db_data[1],
             "email": db_data[2],
-            "senha": db_data[3],
+            "senha_hash": db_data[3],
             "curso": db_data[4],
             "periodo": db_data[5],
             "status": db_data[6]

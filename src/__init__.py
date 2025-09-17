@@ -28,9 +28,9 @@ def load_user(user_id):
     if user_data:
         user = User(
             id=user_data['id'],
-            nome=user_data['fullname'],
+            nome=user_data['nome'],
             email=user_data['email'],
-            senha=user_data['password_hash']
+            senha=user_data['senha_hash']
         )
         cache.set(f'user_{user_id}', user, timeout=600) # Armazena o usuário no cache por 10 minutos (600 segundos)
         return user
