@@ -3,8 +3,8 @@ from flask_login import login_user
 from flask_login import login_user, current_user
 from flask import jsonify
 
-from src.model.database.user.search import db_search_user
-from src.model.database.group.user_companies.search import db_search_user_company
+from src.model.database.users.search import db_search_user
+from src.model.database.participants.search import db_search_user_company
 from src.model.user_model import User
 
 from colorama import Fore, Style
@@ -20,10 +20,9 @@ def process_login(data):
     if user_data and check_password_hash(user_data['password_hash'], password):
         user = User(
             id=user_data['id'],
-            fullname=user_data['fullname'],
-            cpf=user_data['cpf'],
+            nome=user_data['fullname'],
             email=user_data['email'],
-            password_hash=user_data['password_hash']           
+            senha=user_data['password_hash']           
         )
 
         login_user(user)

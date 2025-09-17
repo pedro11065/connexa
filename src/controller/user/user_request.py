@@ -2,9 +2,9 @@ from flask import Blueprint, request, render_template, redirect, session
 from flask_login import logout_user, login_required, current_user
 from src import cache
 
-from src.controller.user.functions.login import process_login
-from src.controller.user.functions.register import process_registration
-from src.controller.user.functions.settings import process_settings
+from src.controller.user.login import process_login
+from src.controller.user.register import process_registration
+from src.controller.user.settings import process_settings
 
 # Tudo aqui é: /user...
 

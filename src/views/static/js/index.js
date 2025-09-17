@@ -1,81 +1,60 @@
-function ShowFeature1() {
-    const elemento = document.getElementById('feature-section-1');
-    const posicao = elemento.getBoundingClientRect().top;
-    const alturaJanela = window.innerHeight;
+document.addEventListener('DOMContentLoaded', () => {
+    const themeToggle = document.getElementById('theme-toggle');
+    const body = document.body;
+    const moonIcon = '<i class="fas fa-moon"></i>';
+    const sunIcon = '<i class="fas fa-sun"></i>';
 
-    if (posicao < alturaJanela) {
-        elemento.classList.add('visible');
+    // Carregar tema salvo do localStorage
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        body.classList.add('dark-mode');
+        themeToggle.innerHTML = sunIcon;
     }
-}
 
-window.addEventListener('scroll', ShowFeature1);
+    // Toggle de tema
+    themeToggle.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        const isDarkMode = body.classList.contains('dark-mode');
 
-function ShowFeature2() {
-    const elemento = document.getElementById('feature-section-2');
-    const posicao = elemento.getBoundingClientRect().top;
-    const alturaJanela = window.innerHeight;
+        if (isDarkMode) {
+            localStorage.setItem('theme', 'dark');
+            themeToggle.innerHTML = sunIcon;
+        } else {
+            localStorage.removeItem('theme');
+            themeToggle.innerHTML = moonIcon;
+        }
+    });
 
-    if (posicao < alturaJanela) {
-        elemento.classList.add('visible');
-    }
-}
+    // Animações sutis ao rolar (opcional, pode ser substituído por Framer Motion se integrado a um framework)
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+    };
 
-window.addEventListener('scroll', ShowFeature2);
+    const observerCallback = (entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target); // Deixar de observar após a entrada
+            }
+        });
+    };
 
-function ShowFeature3() {
-    const elemento = document.getElementById('feature-section-3');
-    const posicao = elemento.getBoundingClientRect().top;
-    const alturaJanela = window.innerHeight;
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
 
-    if (posicao < alturaJanela) {
-        elemento.classList.add('visible');
-    }
-}
+    // Adicionar observadores para elementos que devem animar ao aparecer
+    const elementsToAnimate = document.querySelectorAll('.card, .plano-card, .feedback-card, .quem-somos-text, .quem-somos-image');
+    elementsToAnimate.forEach(el => {
+        el.classList.add('hidden'); // Adiciona classe para ocultar inicialmente
+        observer.observe(el);
+    });
 
-window.addEventListener('scroll', ShowFeature3);
-
-function ShowFeature4() {
-    const elemento = document.getElementById('feature-section-4');
-    const posicao = elemento.getBoundingClientRect().top;
-    const alturaJanela = window.innerHeight;
-
-    if (posicao < alturaJanela) {
-        elemento.classList.add('visible');
-    }
-}
-
-window.addEventListener('scroll', ShowFeature4);
-function ShowFeature5() {
-    const elemento = document.getElementById('feature-section-5');
-    const posicao = elemento.getBoundingClientRect().top;
-    const alturaJanela = window.innerHeight;
-
-    if (posicao < alturaJanela) {
-        elemento.classList.add('visible');
-    }
-}
-
-window.addEventListener('scroll', ShowFeature5);
-function ShowFeature6() {
-    const elemento = document.getElementById('feature-section-6');
-    const posicao = elemento.getBoundingClientRect().top;
-    const alturaJanela = window.innerHeight;
-
-    if (posicao < alturaJanela) {
-        elemento.classList.add('visible');
-    }
-}
-
-window.addEventListener('scroll', ShowFeature6);
-
-function ShowFeatureBtn() {
-    const elemento = document.getElementById('feature-btn-container');
-    const posicao = elemento.getBoundingClientRect().top;
-    const alturaJanela = window.innerHeight;
-
-    if (posicao < alturaJanela) {
-        elemento.classList.add('visible');
-    }
-}
-
-window.addEventListener('scroll', ShowFeatureBtn);
+    // Adicionar classe 'visible' para animação CSS
+    // Isso é feito dentro do observerCallback para melhor controle
+    // Exemplo: o CSS precisa ter uma regra como:
+    /*
+    .hidden { opacity: 0; transform: translateY(20px); }
+    .visible { opacity: 1; transform: translateY(0); transition: opacity 0.5s ease-out, transform 0.5s ease-out; }
+    */
+});

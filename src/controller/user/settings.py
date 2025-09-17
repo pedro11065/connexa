@@ -4,8 +4,8 @@ from src import cache
 from colorama import Fore, Style
 
 from werkzeug.security import check_password_hash, generate_password_hash
-from src.model.database.user.search import db_search_user
-from src.model.database.user.update import db_update_user
+from src.model.database.users.search import db_search_user
+from src.model.database.users.update import db_update_user
 from src.model.validation.user.validate import validate_cpf_and_email
 
 def process_settings(data):

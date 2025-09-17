@@ -4,7 +4,7 @@ from flask_caching import Cache
 
 from colorama import Fore, Style
 
-from src.model.database.user.search import db_search_user
+from src.model.database.users.search import db_search_user
 from src.model.user_model import User
 
 # Criação do LoginManager fora da função create_app
@@ -28,10 +28,9 @@ def load_user(user_id):
     if user_data:
         user = User(
             id=user_data['id'],
-            fullname=user_data['fullname'],
-            cpf=user_data['cpf'],
+            nome=user_data['fullname'],
             email=user_data['email'],
-            password_hash=user_data['password_hash']
+            senha=user_data['password_hash']
         )
         cache.set(f'user_{user_id}', user, timeout=600) # Armazena o usuário no cache por 10 minutos (600 segundos)
         return user
