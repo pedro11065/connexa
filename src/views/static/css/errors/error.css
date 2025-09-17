@@ -1,22 +1,23 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #8e63f0 0%, #8742e1 100%);
     height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #ffffff;
+    color: #2d3748;
 }
 
 .error-container {
     text-align: center;
-    padding: 2rem;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    padding: 2.5rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 90%;
 }
 
 .logo {
@@ -27,7 +28,7 @@ body {
 h1 {
     font-size: 6rem;
     margin: 0;
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    background: linear-gradient(135deg, #8e63f0, #6b46c1);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -36,35 +37,35 @@ h1 {
 h2 {
     font-size: 2rem;
     margin: 1rem 0;
-    color: #4ecdc4;
+    color: #4a5568;
 }
 
 p {
     font-size: 1.2rem;
     margin-bottom: 2rem;
-    color: #cccccc;
+    color: #718096;
 }
 
 .btn-voltar {
     display: inline-block;
-    padding: 12px 30px;
-    background: linear-gradient(45deg, #4ecdc4, #45b7af);
+    padding: 1rem 2rem;
+    background-color: #9370DB;
     color: white;
     text-decoration: none;
-    border-radius: 25px;
+    border-radius: 8px;
     font-weight: 600;
     transition: all 0.3s ease;
 }
 
 .btn-voltar:hover {
+    background-color: #553c9a;
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 640px) {
     .error-container {
-        width: 90%;
-        margin: 0 20px;
+        padding: 1.5rem;
+        margin: 0 1rem;
     }
 
     h1 {
