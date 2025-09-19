@@ -13,6 +13,6 @@ ENV DOCKER_ENV=1
 
 CMD ["python", "main.py"]
 
-#docker build -t beesiness .
+#docker build -t connexa .
 
-#docker run --rm -it -p 5000:5000 beesiness
+#docker run --rm -it -p 5000:5000 connexa

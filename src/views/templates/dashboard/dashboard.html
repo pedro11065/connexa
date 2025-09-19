@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Connexa</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <section class="dashboard-container">
+        <div class="empty-group">
+            <img src="{{ url_for('static', filename='images/index/hero.png') }}" alt="Sem grupos" class="empty-group-img">
+            <h2>Você ainda não faz parte de nenhum grupo</h2>
+            <p>Crie um grupo para começar a colaborar com outros estudantes!</p>
+            <button class="btn btn-primary" id="openCreateGroupModal">
+                <i class="fas fa-users"></i> Criar Grupo
+            </button>
+        </div>
+    </section>
+
+    <!-- Modal de criação de grupo -->
+    <div class="modal-backdrop" id="modalBackdrop" style="display: none;">
+        <div class="modal">
+            <h3>Criar Novo Grupo</h3>
+            <form id="createGroupForm">
+                <div class="form-group">
+                    <label for="groupName">Nome do Grupo</label>
+                    <input type="text" id="groupName" name="groupName" placeholder="Digite o nome do grupo" required>
+                </div>
+                <div class="form-group">
+                    <label for="groupMateria">Matéria</label>
+                    <input type="text" id="groupMateria" name="groupMateria" placeholder="Ex: Matemática, Física" required>
+                </div>
+                <div class="form-group">
+                    <label for="groupObjetivo">Objetivo</label>
+                    <input type="text" id="groupObjetivo" name="groupObjetivo" placeholder="Descreva o objetivo do grupo" required>
+                </div>
+                <div class="form-group">
+                    <label for="groupLocal">Local</label>
+                    <select id="groupLocal" name="groupLocal" required>
+                        <option value="">Selecione</option>
+                        <option value="online">Online</option>
+                        <option value="presencial">Presencial</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="groupEmails">Participantes (e-mails, separados por vírgula)</label>
+                    <input type="text" id="groupEmails" name="groupEmails" placeholder="exemplo@email.com, outro@email.com" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Criar</button>
+                    <button type="button" class="btn btn-secondary" id="closeModal">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/dashboard/dashboard.js') }}"></script>
+</body>
+</html>

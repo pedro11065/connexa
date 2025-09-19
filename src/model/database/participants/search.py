@@ -4,7 +4,7 @@ import psycopg2
 from colorama import Fore, Style
 from ..connect import connect_database
 
-def participants_search(user_id, company_id):
+def participants_search(user_id, group_id):
         db_login = connect_database() # Coleta os dados para conexão
 
         #Conecta ao banco de dados.
@@ -16,15 +16,15 @@ def participants_search(user_id, company_id):
         )
         cur = conn.cursor() # Cria um cursor no PostGreSQL
 
-        if company_id is None:
+        if group_id is None:
             # Se company_id for None, busque todas as empresas para o user_id
             query = "SELECT * FROM participantes WHERE usuario_id = %s"
             cur.execute(query, (user_id,))
         else:
             # Se company_id for fornecido, busque a relação específica
-            print(Fore.CYAN + '[Banco de dados] ' + Style.RESET_ALL + f'Buscando relação do usuário ({user_id}) com a empresa ({company_id})...  ')
+            print(Fore.CYAN + '[Banco de dados] ' + Style.RESET_ALL + f'Buscando relação do usuário ({user_id}) com o grupo ({group_id})...  ')
             query = "SELECT * FROM participantes WHERE usuario_id = %s AND groupo_id = %s"
-            cur.execute(query, (user_id, company_id))
+            cur.execute(query, (user_id, group_id))
         
         #---------------------------------------------------------------INDICES---------------------
                                  #                        0         1             2     

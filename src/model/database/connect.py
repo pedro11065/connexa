@@ -25,3 +25,12 @@ def connect_database():
     except KeyError as e:
         print(f"Chave {e} não encontrada no arquivo JSON.")
         return False
+
+
+    # "db": {
+    # "logged": 1, "host": "ep-bitter-night-acpam60g-pooler.sa-east-1.aws.neon.tech",
+    # "database": "connexa",
+    # "user": "neondb_owner",
+    # "password": "npg_C8lUvizEhPG2"
+    # }
+#}
