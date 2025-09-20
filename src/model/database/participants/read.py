@@ -1,10 +1,12 @@
 # Pesquisa um valor na tabela "table_user_companies" que registra as relações entre os demais usuários de uma empresa, além do criador
 
 import psycopg2
-from colorama import Fore, Style
+from src.settings.colors import *
+from src import cache
+
 from ..connect import connect_database
 
-def participants_search(user_id, group_id):
+def db_participants_read(user_id, group_id):
         db_login = connect_database() # Coleta os dados para conexão
 
         #Conecta ao banco de dados.
@@ -22,7 +24,7 @@ def participants_search(user_id, group_id):
             cur.execute(query, (user_id,))
         else:
             # Se company_id for fornecido, busque a relação específica
-            print(Fore.CYAN + '[Banco de dados] ' + Style.RESET_ALL + f'Buscando relação do usuário ({user_id}) com o grupo ({group_id})...  ')
+            print('[Banco de dados] ' + cyan(f'Buscando relação do usuário ({user_id}) com o grupo ({group_id})...  '))
             query = "SELECT * FROM participantes WHERE usuario_id = %s AND groupo_id = %s"
             cur.execute(query, (user_id, group_id))
         
@@ -35,6 +37,6 @@ def participants_search(user_id, group_id):
         conn.close() # Fecha a conexão geral
 
         if db_data:
-            return db_data
+            return True, db_data
         else:
-            return False
+            return False, None

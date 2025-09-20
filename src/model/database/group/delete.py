@@ -1,32 +1,25 @@
 import psycopg2
-from colorama import Fore, Style
+from src.settings.colors import *
 
 from ..connect import connect_database
 
-def db_delete_company(delete_data):
-
-    print(Fore.CYAN + '[Banco de dados] ' + Style.RESET_ALL + 'Deletando empresa - delete_company')
-
-    db_login = connect_database() # Coleta os dados para conexão
-
-    # Conecta ao banco de dados
+def db_delete_grupo(id_grupo):
+    db_login = connect_database()
     conn = psycopg2.connect(
         host=db_login[0],
         database=db_login[1],
         user=db_login[2],
         password=db_login[3]
     )
-    # Cria um cursor
     cur = conn.cursor()
-
-    # Deleta os dados encontrados naquele e-mail.
-    cur.execute("DELETE FROM table_companies WHERE company_cnpj = %s", (delete_data))
-    cur.execute("DELETE FROM table_user_companies WHERE company_cnpj = %s", (delete_data))
-    # Atualiza as informações.
-    conn.commit()
-
-    # Fecha o cursor e encerra a conexão.
-    cur.close()
-    conn.close()
-
-    print(Fore.CYAN + '[Banco de dados] ' + Style.RESET_ALL + 'Empresa registrada com sucesso!')
+    try:
+        cur.execute("DELETE FROM grupos_estudo WHERE id = %s;", (id_grupo,))
+        conn.commit()
+        print(green(f'Grupo com id {id_grupo} deletado com sucesso!'))
+        return True
+    except Exception as e:
+        print(red(f'Erro ao deletar grupo: {e}'))
+        return False
+    finally:
+        cur.close()
+        conn.close()

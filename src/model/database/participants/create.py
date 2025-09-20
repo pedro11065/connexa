@@ -1,10 +1,10 @@
 import psycopg2
 from ..connect import connect_database
 import uuid
+from datetime import datetime
 
-def db_create_grupo_estudo(usuario_criador_id, materia, objetivo, local, limite_participantes):
-    db_login = connect_database()  # Coleta os dados para conexão
-
+def db_create_participante( usuario_id, grupo_id):
+    db_login = connect_database()
     conn = psycopg2.connect(
         host=db_login[0],
         database=db_login[1],
@@ -12,31 +12,18 @@ def db_create_grupo_estudo(usuario_criador_id, materia, objetivo, local, limite_
         password=db_login[3]
     )
     cur = conn.cursor()
-
-    grupo_id = str(uuid.uuid4())
-
+    participante_id = str(uuid.uuid4())
     try:
-        cur.execute("""
-            INSERT INTO grupos_estudo (
-                id, usuario_criador_id, materia, objetivo, local, limite_participantes
-            ) VALUES (%s, %s, %s, %s, %s, %s);
-        """, (
-            grupo_id,
-            usuario_criador_id,
-            materia,
-            objetivo,
-            local,
-            limite_participantes
-        ))
-
+        cur.execute('''
+            INSERT INTO participantes (id, grupo_id, usuario_id, data_entrada)
+            VALUES (%s, %s, %s, %s)
+        ''', (participante_id, grupo_id, usuario_id, datetime.now()))
         conn.commit()
-        print(f'Grupo de estudo "{materia}" criado com sucesso (ID: {grupo_id}).')
-        return True
-
+        print(f'Participante adicionado com sucesso! (ID: {participante_id})')
+        return True, participante_id
     except Exception as e:
-        print(f"Erro ao criar grupo de estudo: {e}")
-        return False
-
+        print(f'Erro ao adicionar participante: {e}')
+        return False, None
     finally:
         cur.close()
         conn.close()

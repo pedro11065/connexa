@@ -90,9 +90,9 @@ document.getElementById('createGroupForm').onsubmit = function(e) {
         },
         body: JSON.stringify({
             name: groupName,
-            materia: groupMateria,
-            objetivo: groupObjetivo,
-            local: groupLocal,
+            subject: groupMateria,
+            objective: groupObjetivo,
+            place: groupLocal,
             emails: groupEmails.split(',').map(email => email.trim())
         })
     })

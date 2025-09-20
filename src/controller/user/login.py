@@ -4,7 +4,7 @@ from flask_login import login_user, current_user
 from flask import jsonify
 
 from src.model.database.users.search import db_search_user
-from src.model.database.participants.search import participants_search
+from src.model.database.participants.read import db_participants_read
 from src.model.user_model import User
 
 from colorama import Fore, Style
@@ -30,7 +30,7 @@ def process_login(data):
         id = user_data['id']
 
         
-        if participants_search(id, None):
+        if db_participants_read(id, None):
             print(Fore.GREEN + '[API Login] ' + Style.RESET_ALL + f'Usuário está relacionado a uma empresa!')
             return jsonify({'login': True, 'company': True, 'redirect_url': '/dashboard/user'}), 200
         else:

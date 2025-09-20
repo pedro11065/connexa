@@ -1,46 +1,42 @@
 import psycopg2
 import uuid
-from colorama import Fore, Style
+from src.settings.colors import *
 
 from ..connect import connect_database
 
-def db_create_company(nome, user_id, email, cnpj, hashed_password): # Cria um usuário usando as informações do user_info como parametro, todos os dados são temporários.
-    
-    print(Fore.CYAN + '[Banco de dados] ' + Style.RESET_ALL + 'Registrando a empresa no banco de dados...')
-
-    db_login = connect_database() # Coleta os dados para conexão
-    
-    # Conecta ao banco de dados
+def db_create_grupo(user_id, materia, objetivo, local, limite_participantes):
+    db_login = connect_database()
     conn = psycopg2.connect(
         host=db_login[0],
         database=db_login[1],
         user=db_login[2],
         password=db_login[3]
     )
-
-    # Cria um cursor
     cur = conn.cursor()
-
-    company_id = uuid.uuid4() # Uuid novo para empresa
-   
-    # Insere os dados principais do usuário para armazenar na tabela
-    cur.execute(f"INSERT INTO table_companies (company_id, user_id, company_name, company_email, company_cnpj, company_password) VALUES ('{company_id}','{user_id}','{nome}','{email}','{cnpj}','{hashed_password}');")  
+    grupo_id = str(uuid.uuid4())
+    try:
+        cur.execute('''
+            INSERT INTO grupos_estudo (
+                id, usuario_criador_id, materia, objetivo, local, limite_participantes
+            ) VALUES (%s, %s, %s, %s, %s, %s)
+        ''', (
+            grupo_id,
+            user_id,
+            materia,
+            objetivo,
+            local,
+            limite_participantes
+        ))
+        conn.commit()
+        print(green(f'Grupo de estudo "{materia}" criado com sucesso (ID: {grupo_id}).'))
+        return True, grupo_id
     
-    asset_id = uuid.uuid4()
+    except Exception as e:
+        print(red(f'Erro ao criar grupo de estudo: {e}'))
+        return False, None
+    finally:
+        cur.close()
+        conn.close()
 
-    # Adiciona o caixa inicial automaticamente (Pretendemos mudar isso para colocar na hora da criação da empresa)
-    cur.execute(f"INSERT INTO table_assets (asset_id, company_id, user_id, name, event, class, value, location, acquisition_date, description, status, debit, credit) VALUES ('{asset_id}', '{company_id}', '{user_id}', '#!@cash@!#', 'Entrada de caixa', 'caixa', 0, '----', '01-01-2024', '----', 'Em uso', 0, 0);")
-    
-    user_access_level = 'creator' # Nivel do usuário
-    
-    # Relação do usuário com a empresa a qual ele criou
-    cur.execute(f"INSERT INTO table_user_companies (company_id, user_id, user_access_level) VALUES ('{company_id}', '{user_id}', '{user_access_level}');")
 
-    # Confirma as mudanças
-    conn.commit()
-    print(Fore.CYAN + '[Banco de dados] ' + Style.RESET_ALL + 'Empresa registrada com sucesso!')
-
-    # Fecha o cursor e encerra a conexão.
-    cur.close()
-    conn.close()
 

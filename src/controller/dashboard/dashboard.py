@@ -1,6 +1,55 @@
-from src.model.database.participants.search import *
-def info_dashboard(user_id):
+from src.model.database.group.create import *
+from src.model.database.group.read import *
+from src.model.database.group.update import *
+from src.model.database.group.delete import *
 
-    data = participants_search(user_id, None)
+
+from src.model.database.participants.create import *
+
+
+from flask import jsonify
+
+class Group:
+    
+    @staticmethod
+    def create(user_id, request):
+
+            request = request.get_json()
+            name = request.get('name')
+            subject = request.get('subject')
+            objective = request.get('objective')
+            place = request.get('place')
+            emails = request.get('emails')
+            limit = len(emails) + 1  # +1 para o criador
+            
+            # Cria o grupo
+            success = db_create_grupo(user_id, subject, objective, place, limit)
+            if success[0] == True:
+                success = db_create_participante(user_id, success[0]) 
+                
+            if success:
+                return jsonify({'success': True, 'message': 'Grupo criado com sucesso!'}), 200
+            else:
+                return jsonify({'success': False, 'message': 'Erro ao criar o grupo.'}), 500
+            
+    @staticmethod
+    def read(user_id, request):
+
+            #buscar no participantes e dps disso pesquisar no grupos, é possivel de se fazer isso com um join.
+            success = db_read_grupo(user_id, None)
+
+            if success:
+                return jsonify({'success': True, 'data':success[0], 'message': 'Grupo(s) encotrado(s) com sucesso!'}), 200
+            else:
+                return jsonify({'success': False, 'data':None, 'message': 'O usuário não está em nenhum grupo.'}), 500
 
     
+            
+
+
+
+    
+
+
+
+        

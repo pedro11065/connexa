@@ -1,33 +1,46 @@
 import psycopg2
-from psycopg2 import sql
-from colorama import Fore, Style
+from src.settings.colors import *
+from src import cache
 
 from ..connect import connect_database
 
-def db_update_user_companies(permission, user_id):
-    db_login = connect_database() 
-    
+def db_update_participante(participante_id, grupo_id=None, usuario_id=None, data_entrada=None):
+    db_login = connect_database()
     conn = psycopg2.connect(
         host=db_login[0],
         database=db_login[1],
         user=db_login[2],
         password=db_login[3]
     )
-    cur = conn.cursor() # Cria um cursor no PostGreSQL
-    
-
-    print(Fore.GREEN + '[Atualização de permissão] ' + Style.RESET_ALL + f'Mudando permissão de usuário no banco de dados...')
+    cur = conn.cursor()
+    updates = []
+    params = []
+    if grupo_id is not None:
+        updates.append('grupo_id = %s')
+        params.append(grupo_id)
+    if usuario_id is not None:
+        updates.append('usuario_id = %s')
+        params.append(usuario_id)
+    if data_entrada is not None:
+        updates.append('data_entrada = %s')
+        params.append(data_entrada)
+    if not updates:
+        print(f'{Fore.CYAN}[Banco de dados]{Fore.RED} Nenhum campo para atualizar!{Style.RESET_ALL}')
+        return False
+    params.append(participante_id)
+    query = f'UPDATE participantes SET {", ".join(updates)} WHERE id = %s'
     try:
-        cur.execute("UPDATE table_user_companies SET user_access_level = %s WHERE user_id = %s;", (permission, user_id))
-        print(Fore.GREEN + '[Atualização de permissão] ' + Style.RESET_ALL + f'Dados alterados com sucesso!')
-    except:
-        print(Fore.RED + '[Atualização de permissão] ' + Style.RESET_ALL + f'Dados do usuário não encontrados.')
+        cur.execute(query, tuple(params))
+        conn.commit()
+        print(f'{Fore.CYAN}[Banco de dados]{Fore.GREEN} Participante atualizado com sucesso!{Style.RESET_ALL}')
+        return True
+    except Exception as e:
+        print(f"{Fore.CYAN}[Banco de dados]{Fore.RED} Erro ao atualizar participante: {e}{Style.RESET_ALL}")
         return False
     finally:
-        conn.commit();
-        cur.close();
-        conn.close();
+        cur.close()
+        conn.close()
 
-    
-        
-    
+
+
+
