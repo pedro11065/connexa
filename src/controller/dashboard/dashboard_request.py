@@ -20,9 +20,9 @@ def dashboard():
         return render_template('dashboard/dashboard.html')
     
 
-#@dashboard_request.route(f'create/grupo', methods=['POST','GET']) 
-# @login_required
-# def create_grupo():
-#     if request.method == 'POST':
-#         user_id = str(current_user.id)
-#         return grupo('criar', user_id, request)
+@dashboard_request.route(f'create/group', methods=['POST','GET']) 
+@login_required
+def criar_grupo():
+    if request.method == 'POST':
+        user_id = str(current_user.id)
+        return Group.create(user_id, request)

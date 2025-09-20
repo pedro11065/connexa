@@ -4,15 +4,14 @@ from src import cache
 from colorama import Fore, Style
 
 from werkzeug.security import check_password_hash, generate_password_hash
-from src.model.database.users.search import db_search_user
-from src.model.database.users.update import db_update_user
+from src.model.db.DbController import Db; db = Db()
 from src.model.validation.user.validate import validate_cpf_and_email
 
 def process_settings(data):
     password = data['password']
 
     # Buscar a senha hash do banco de dados
-    password_db = db_search_user(current_user.id)
+    password_db = db.users.read(current_user.id)
     password_hash = password_db['password_hash']
 
     # Verificar se a senha informada está correta
@@ -31,7 +30,7 @@ def process_settings(data):
                 hashed_password = password_hash  # Usa a senha atual
 
             # Atualiza os dados do usuário no banco de dados
-            db_update_user(current_user.id, data['name'], data['cpf'], data['email'], hashed_password)
+            db.users.update(current_user.id, data['name'], data['cpf'], data['email'], hashed_password)
 
             cache.delete(f'user_{current_user.id}')
             return jsonify({"success": True}), 200

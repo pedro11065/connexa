@@ -1,7 +1,6 @@
 from datetime import datetime
 from flask import request, jsonify
 from werkzeug.security import generate_password_hash
-from src.model.database.users.create import db_create_user
 from src.model.validation.user.validate import validate_cpf_and_email
 from colorama import Fore, Style
 

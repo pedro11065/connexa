@@ -4,8 +4,8 @@ from flask_caching import Cache
 
 from colorama import Fore, Style
 
-from src.model.database.users.search import db_search_user
-from src.model.user_model import User
+from src.model.db.DbController import *
+from src.model.classes.user import User
 
 # Criação do LoginManager fora da função create_app
 login_manager = LoginManager()
@@ -24,7 +24,7 @@ def load_user(user_id):
 
     # Se o usuário não estiver no cache, busca no banco de dados
     print(Fore.YELLOW + f"Carregando usuário {user_id} do banco de dados." + Style.RESET_ALL)
-    user_data = db_search_user(user_id)
+    db = Db(); user_data = db.users.read(user_id)
     if user_data:
         user = User(
             id=user_data['id'],

@@ -1,6 +1,6 @@
 import psycopg2 #PostGreSQL library
 
-from ..src.model.database.json_db import json_db_read #import a function from json_db_read
+from src.model.db.DbController import Db; db = Db()
 
 #create a user using user_info as parameter, all user data are temporarily in it
 #Maybe, with this file its possible to resume 3 files in only one, just using another parameter

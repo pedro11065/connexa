@@ -1,6 +1,5 @@
 from colorama import Fore, Style
-from src.model.database.company.companies.search import db_search_company
-from src.model.database.user.search import db_search_user
+from src.model.db.DbController import Db; db = Db()
 
 # Verifica o CNPJ no banco de dados
 def cnpj_check(cnpj):

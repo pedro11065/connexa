@@ -31,7 +31,7 @@ window.addEventListener('DOMContentLoaded', function() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({})
+        body: JSON.stringify({'type':'user'})
     })
     .then(response => response.json())
     .then(data => {
@@ -83,7 +83,7 @@ document.getElementById('createGroupForm').onsubmit = function(e) {
         alert('Preencha todos os campos.');
         return;
     }
-    fetch('/dashboard/user', {
+    fetch('create/group', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -101,11 +101,12 @@ document.getElementById('createGroupForm').onsubmit = function(e) {
             throw new Error('Erro ao criar o grupo.');
         }
         return response.json();
-    })
-    .then(() => {
+        })
+        .then(() => {
         alert('Grupo criado com sucesso!');
         document.getElementById('modalBackdrop').style.display = 'none';
         this.reset();
+        location.reload();
     })
     .catch(error => {
         alert(error.message);
