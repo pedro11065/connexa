@@ -26,27 +26,38 @@ function renderChatDashboard(grupos) {
     if (!chatDiv) {
         chatDiv = document.createElement('div');
         chatDiv.id = 'chat-dashboard';
-        // Sidebar com lista de grupos
-        let sidebar = '<div class="chat-sidebar"><h4>Grupos</h4><ul>';
-        grupos.forEach((grupo, idx) => {
-            sidebar += `<li class="chat-group-item" data-group="${grupo.id_grupo}">
-                <strong>${grupo.materia}</strong><br>
-                <span>${grupo.objetivo}</span>
-            </li>`;
-        });
-        sidebar += '</ul></div>';
-        // Área principal do chat (placeholder)
-        let main = `<div class="chat-main">
-            <div class="chat-messages">Selecione um grupo para ver as mensagens.</div>
-            <div class="chat-input"><input type="text" placeholder="Digite uma mensagem..."></div>
-        </div>`;
-        chatDiv.innerHTML = `<div class="chat-container">${sidebar}${main}</div>`;
+        chatDiv.innerHTML = `
+        <div class="chat-layout">
+            <aside class="chat-sidebar">
+                <div class="chat-sidebar-header">Conversas</div>
+                <ul class="group-list">
+                    ${grupos.map(grupo => `
+                        <li class="group-item" data-group="${grupo.id_grupo}">
+                            <div class="group-title">${grupo.materia}</div>
+                            <div class="group-desc">${grupo.objetivo}</div>
+                        </li>
+                    `).join('')}
+                </ul>
+            </aside>
+            <main class="chat-main-area">
+                <header class="chat-header">
+                    <span class="chat-group-header-title">Selecione um grupo</span>
+                </header>
+                <div class="chat-placeholder">
+                    <div class="chat-empty-icon"><i class="fas fa-comments"></i></div>
+                    <div class="chat-empty-text">Selecione um grupo para visualizar o chat.<br><span style='color:#888;font-size:0.95em'>(Em desenvolvimento)</span></div>
+                </div>
+            </main>
+        </div>
+        `;
         document.body.appendChild(chatDiv);
-        // Adiciona evento para seleção de grupo
-        chatDiv.querySelectorAll('.chat-group-item').forEach(item => {
+        // Evento de seleção de grupo
+        chatDiv.querySelectorAll('.group-item').forEach(item => {
             item.addEventListener('click', function() {
-                const groupId = this.getAttribute('data-group');
-                renderGroupChat(grupos.find(g => g.id_grupo === groupId));
+                chatDiv.querySelectorAll('.group-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                const groupName = this.querySelector('.group-title').textContent;
+                renderGroupChatPlaceholder(groupName);
             });
         });
     } else {
@@ -54,22 +65,26 @@ function renderChatDashboard(grupos) {
     }
 }
 
-function renderGroupChat(grupo) {
+function renderGroupChatPlaceholder(groupName) {
     const chatDiv = document.getElementById('chat-dashboard');
     if (!chatDiv) return;
-    const main = chatDiv.querySelector('.chat-main');
+    const main = chatDiv.querySelector('.chat-main-area');
     if (!main) return;
     main.innerHTML = `
-        <div class="chat-messages">
-            <div class="chat-group-header">
-                <h3>${grupo.materia}</h3>
-                <p>${grupo.objetivo}</p>
-                <span class="chat-group-meta">${grupo.local} | ${grupo.status} | Limite: ${grupo.limite_participantes}</span>
-            </div>
-            <div class="chat-messages-list">(Mensagens do grupo aqui...)</div>
+        <header class="chat-header">
+            <span class="chat-group-header-title">${groupName}</span>
+        </header>
+        <div class="chat-messages-area">
+            <div class="chat-messages-list"></div>
+            <form class="chat-message-bar" onsubmit="return false;">
+                <input type="text" class="chat-message-input" placeholder="Digite uma mensagem..." autocomplete="off" />
+                <button type="submit" class="chat-send-btn"><i class="fas fa-paper-plane"></i></button>
+            </form>
         </div>
-        <div class="chat-input"><input type="text" placeholder="Digite uma mensagem..."></div>
     `;
+    // Foco no input ao abrir
+    const input = main.querySelector('.chat-message-input');
+    if (input) input.focus();
 }
 
 document.getElementById('openCreateGroupModal').onclick = function() {
