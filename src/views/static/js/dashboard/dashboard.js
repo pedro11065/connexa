@@ -1,31 +1,5 @@
 window.addEventListener('DOMContentLoaded', function() {
-    // GET request para buscar status do usuário
-    fetch('/dashboard/user', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Erro ao carregar informações do dashboard.');
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.status === true) {
-            // Usuário está em grupo: renderizar interface de chat
-            renderChatDashboard(data);
-        } else {
-            // Usuário não está em grupo: manter tela padrão
-            document.querySelector('.dashboard-container').style.display = 'flex';
-        }
-    })
-    .catch(error => {
-        // alert(error.message);
-    });
-
-    // POST request para buscar status do usuário (caso necessário)
+    // POST request para buscar status do usuário e grupos
     fetch('/dashboard/user', {
         method: 'POST',
         headers: {
@@ -35,32 +9,67 @@ window.addEventListener('DOMContentLoaded', function() {
     })
     .then(response => response.json())
     .then(data => {
-        // Se quiser tratar algo após o POST, faça aqui
-        // Exemplo: console.log('POST dashboard/user', data);
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+            renderChatDashboard(data.data);
+        } else {
+            document.querySelector('.dashboard-container').style.display = 'flex';
+        }
+    })
+    .catch(error => {
+        // alert(error.message);
     });
 });
 
-function renderChatDashboard(data) {
-    // Esconde a tela de "você não está em nenhum grupo"
+function renderChatDashboard(grupos) {
     document.querySelector('.dashboard-container').style.display = 'none';
-    // Cria e exibe a interface de chat (exemplo básico)
     let chatDiv = document.getElementById('chat-dashboard');
     if (!chatDiv) {
         chatDiv = document.createElement('div');
         chatDiv.id = 'chat-dashboard';
-        chatDiv.innerHTML = `
-            <div class="chat-container">
-                <div class="chat-sidebar">Grupos</div>
-                <div class="chat-main">
-                    <div class="chat-messages">Bem-vindo ao grupo!</div>
-                    <div class="chat-input"><input type="text" placeholder="Digite uma mensagem..."></div>
-                </div>
-            </div>
-        `;
+        // Sidebar com lista de grupos
+        let sidebar = '<div class="chat-sidebar"><h4>Grupos</h4><ul>';
+        grupos.forEach((grupo, idx) => {
+            sidebar += `<li class="chat-group-item" data-group="${grupo.id_grupo}">
+                <strong>${grupo.materia}</strong><br>
+                <span>${grupo.objetivo}</span>
+            </li>`;
+        });
+        sidebar += '</ul></div>';
+        // Área principal do chat (placeholder)
+        let main = `<div class="chat-main">
+            <div class="chat-messages">Selecione um grupo para ver as mensagens.</div>
+            <div class="chat-input"><input type="text" placeholder="Digite uma mensagem..."></div>
+        </div>`;
+        chatDiv.innerHTML = `<div class="chat-container">${sidebar}${main}</div>`;
         document.body.appendChild(chatDiv);
+        // Adiciona evento para seleção de grupo
+        chatDiv.querySelectorAll('.chat-group-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const groupId = this.getAttribute('data-group');
+                renderGroupChat(grupos.find(g => g.id_grupo === groupId));
+            });
+        });
     } else {
         chatDiv.style.display = 'block';
     }
+}
+
+function renderGroupChat(grupo) {
+    const chatDiv = document.getElementById('chat-dashboard');
+    if (!chatDiv) return;
+    const main = chatDiv.querySelector('.chat-main');
+    if (!main) return;
+    main.innerHTML = `
+        <div class="chat-messages">
+            <div class="chat-group-header">
+                <h3>${grupo.materia}</h3>
+                <p>${grupo.objetivo}</p>
+                <span class="chat-group-meta">${grupo.local} | ${grupo.status} | Limite: ${grupo.limite_participantes}</span>
+            </div>
+            <div class="chat-messages-list">(Mensagens do grupo aqui...)</div>
+        </div>
+        <div class="chat-input"><input type="text" placeholder="Digite uma mensagem..."></div>
+    `;
 }
 
 document.getElementById('openCreateGroupModal').onclick = function() {

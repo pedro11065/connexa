@@ -2,6 +2,7 @@
 import uuid
 from src.settings.colors import *
 from src.model.db.DbConnect import *
+from src.model.classes.user import *
 
 class Users:
 
@@ -67,6 +68,7 @@ class Users:
                 print(Fore.RED + '[Banco de dados] ' + Style.RESET_ALL + 'Nenhum usuário encontrado.')
                 return False
             print(Fore.CYAN + '[Banco de dados] ' + Fore.GREEN + 'Dados do usuário encontrados com sucesso!' + Style.RESET_ALL)
+            
             return {
                 "id": db_data[0],
                 "nome": db_data[1],

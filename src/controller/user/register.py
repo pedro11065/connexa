@@ -2,6 +2,7 @@ from datetime import datetime
 from flask import request, jsonify
 from werkzeug.security import generate_password_hash
 from src.model.validation.user.validate import validate_cpf_and_email
+from src.model.db.DbController import Db; db = Db()
 from colorama import Fore, Style
 
 def process_registration(create_data):
@@ -21,6 +22,6 @@ def process_registration(create_data):
         return jsonify({"register": False, "email_error": email_error}), 200
     else:
         hashed_password = generate_password_hash(senha)
-        db_create_user(nome, email, hashed_password, curso, periodo, status)
+        db.users.create(nome, email, hashed_password, curso, periodo, status)
         print(Fore.GREEN + '[API Usuário - Registro] ' + Style.RESET_ALL + 'Cadastro realizado com sucesso!')
         return jsonify({"register": True}), 200

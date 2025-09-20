@@ -55,35 +55,62 @@ class Groups:
             db.conn.close()
 
     @staticmethod    
-    def read(type, user_id=None, id_group=None):
+    def read(id):
 
         db = Db_connect()
         cur = db.conn.cursor()
 
         params = []
         
-        if type == 'user':
-            query = " SELECT * FROM grupos_estudo WHERE usuario_criador_id = %s"
-            params.append(user_id)
-            
-        else:
-            query = " AND id = %s"
-            query = " SELECT * FROM grupos_estudo WHERE id = %s"
-            params.append(id_group)
+        query = """
+        SELECT * FROM grupos_estudo 
+        WHERE usuario_criador_id = %s OR id = %s
+        """
+        params.extend([id, id])
 
         print(cyan("[Banco de dados]: ") + 'Pesquisando por usuário/grupo na tabela de grupos...')
         cur.execute(query, tuple(params))
-        grupos = cur.fetchall()
+        data = cur.fetchall()
 
         cur.close()
         db.conn.close()
 
-        if not grupos:
+        if not data:
             print(cyan("[Banco de dados]: ") + yellow('Nenhum grupo encontrado com os parâmetros fornecidos.'))
-            return []
+            return False, []
+        
         else:
-            print(cyan("[Banco de dados]: ") + green(f'{len(grupos)} grupo(s) encontrado(s).'))
-            return grupos
+            print(cyan("[Banco de dados]: ") + green(f'{len(data)} grupo(s) encontrado(s).'))
+
+            grupos = []
+
+            if len(data) > 1:
+
+                for grupo in data: 
+
+                    grupos.append({
+                        "id_grupo": grupo[0],
+                        "id_criador": grupo[1],
+                        "materia": grupo[2],
+                        "objetivo": grupo[3],
+                        "local": grupo[4],
+                        "limite_participantes": grupo[5],
+                        "status": grupo[6],
+                        "criado_em": grupo[6]
+                    })
+
+                return True, grupos
+            
+            return {
+                        "id_grupo": data[0][0],
+                        "id_criador": data[0][1],
+                        "materia": data[0][2],
+                        "objetivo": data[0][3],
+                        "local": data[0][4],
+                        "limite_participantes": data[0][5],
+                        "status": data[0][6],
+                        "criado_em": data[0][7]
+                    }
 
 
     @staticmethod

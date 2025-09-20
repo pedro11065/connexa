@@ -24,5 +24,5 @@ def dashboard():
 @login_required
 def criar_grupo():
     if request.method == 'POST':
-        user_id = str(current_user.id)
-        return Group.create(user_id, request)
+        user_id = str(current_user.id); user_email = str(current_user.email)
+        return Group.create(user_id, user_email, request)
