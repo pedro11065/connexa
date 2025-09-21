@@ -1,12 +1,10 @@
-
-
 from src.model.db.DbController import Db; db = Db()
 from flask import jsonify
 import os
 class Group:
     
     @staticmethod
-    def create(user_id, user_email, request):
+    def create_group(user_id, user_email, request):
 
         request = request.get_json()
         name = request.get('name')
@@ -33,7 +31,7 @@ class Group:
             
 
     @staticmethod
-    def read(user_id, request):
+    def info_groups(user_id, request):
 
         #buscar no participantes e dps disso pesquisar no grupos, é possivel de se fazer isso com um join.      
 
@@ -53,14 +51,57 @@ class Group:
             return jsonify({'success': True, 'data':l, 'message': 'Grupo(s) encotrado(s) com sucesso!'}), 200
         else:
             return jsonify({'success': False, 'data':None, 'message': 'O usuário não está em nenhum grupo.'}), 500
-
-
-            
-
-
-
-    
-
-
-
         
+
+
+    @staticmethod
+    def create_message(user_id, request):
+        request = request.get_json()
+        message = request.get('message')
+        group_id = request.get('groupId')
+        # Adiciona retorno JSON para evitar erro 500
+        result = db.messages.create(group_id, user_id, message)
+        if result[0]:
+            return jsonify({'success': True, 'message': 'Mensagem enviada com sucesso!', 'id': result[1]}), 200
+        else:
+            return jsonify({'success': False, 'message': 'Erro ao enviar mensagem.'}), 500
+
+
+    @staticmethod
+    def read_messages(user_id):
+
+        messages = db.messages.read(user_id)
+
+        if messages[0]:
+
+            users = [] ;  ids = []
+
+            for message in messages[1]:
+
+                id =  message["user_id"]
+
+                if id not in ids:
+                    user = db.users.read(id)
+
+                    if user[0]:
+                        print(user[1])
+                        ids.append(user[1]["id"])
+                        users.append(user[1])
+
+            return jsonify({'success': True, 'message': 'Mensagens encontradas com sucesso!', 'data': {"message": messages[1],
+                                                                                                       "users":users}}), 200
+        else:
+            return jsonify({'success': False, 'message': 'Erro ao ler mensagem.'}), 500
+
+
+
+
+
+
+
+
+
+
+
+
+

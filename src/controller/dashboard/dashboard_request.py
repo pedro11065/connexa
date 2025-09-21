@@ -14,7 +14,7 @@ dashboard_request = Blueprint('auth_dashboard', __name__, template_folder='templ
 def dashboard():
     if request.method == 'POST':    
         user_id = str(current_user.id)
-        return Group.read(user_id, request)
+        return Group.info_groups(user_id, request)
     
     if request.method == 'GET':
         return render_template('dashboard/dashboard.html')
@@ -22,7 +22,22 @@ def dashboard():
 
 @dashboard_request.route(f'create/group', methods=['POST','GET']) 
 @login_required
-def criar_grupo():
+def create():
     if request.method == 'POST':
         user_id = str(current_user.id); user_email = str(current_user.email)
-        return Group.create(user_id, user_email, request)
+        return Group.create_group(user_id, user_email, request)
+    
+@dashboard_request.route(f'messages/send', methods=['POST','GET']) 
+@login_required
+def send_message():
+    if request.method == 'POST':
+        user_id = str(current_user.id)
+        return Group.create_message(user_id, request)
+    
+
+@dashboard_request.route(f'messages/read', methods=['POST','GET']) 
+@login_required
+def read_messages():
+    if request.method == 'GET':
+        user_id = str(current_user.id)
+        return Group.read_messages(user_id)

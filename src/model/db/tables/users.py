@@ -52,24 +52,27 @@ class Users:
         db = Db_connect()
         cur = db.conn.cursor()
 
-        # Novo padrão: busca por id, nome, email, curso, periodo ou status
         try:
             if len(search_data) == 36:  # UUID
                 print(Fore.CYAN + '[Banco de dados] ' + Style.RESET_ALL + f'Pesquisando usuário por id: {search_data}')
                 cur.execute("SELECT * FROM usuarios WHERE id = %s;", (search_data,))
+
             elif '@' in search_data:
                 print(Fore.CYAN + '[Banco de dados] ' + Style.RESET_ALL + f'Pesquisando usuário por email: {search_data}')
                 cur.execute("SELECT * FROM usuarios WHERE email = %s;", (search_data,))
+
             else:
                 print(Fore.CYAN + '[Banco de dados] ' + Style.RESET_ALL + f'Pesquisando usuário por nome: {search_data}')
                 cur.execute("SELECT * FROM usuarios WHERE nome = %s;", (search_data,))
             db_data = cur.fetchone()
+
             if not db_data:
                 print(Fore.RED + '[Banco de dados] ' + Style.RESET_ALL + 'Nenhum usuário encontrado.')
-                return False
+                return False, []
+            
             print(Fore.CYAN + '[Banco de dados] ' + Fore.GREEN + 'Dados do usuário encontrados com sucesso!' + Style.RESET_ALL)
             
-            return {
+            return True, {
                 "id": db_data[0],
                 "nome": db_data[1],
                 "email": db_data[2],
@@ -78,9 +81,11 @@ class Users:
                 "periodo": db_data[5],
                 "status": db_data[6]
             }
+        
         except Exception as error:
             print(Fore.RED + '[Banco de dados] ' + Style.RESET_ALL + f'Houve um erro: {error}')
-            return False
+            return False, []
+        
         finally:
             cur.close()
             db.conn.close()

@@ -25,12 +25,12 @@ def load_user(user_id):
     # Se o usuário não estiver no cache, busca no banco de dados
     print(Fore.YELLOW + f"Carregando usuário {user_id} do banco de dados." + Style.RESET_ALL)
     db = Db(); user_data = db.users.read(user_id)
-    if user_data:
+    if user_data[0]:
         user = User(
-            id=user_data['id'],
-            nome=user_data['nome'],
-            email=user_data['email'],
-            senha=user_data['senha_hash']
+            id=user_data[1]['id'],
+            nome=user_data[1]['nome'],
+            email=user_data[1]['email'],
+            senha=user_data[1]['senha_hash']
         )
         cache.set(f'user_{user_id}', user, timeout=600) # Armazena o usuário no cache por 10 minutos (600 segundos)
         return user

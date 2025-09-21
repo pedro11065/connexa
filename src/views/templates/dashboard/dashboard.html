@@ -9,17 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <section class="dashboard-container">
-        <div class="empty-group">
-            <img src="{{ url_for('static', filename='images/index/hero.png') }}" alt="Sem grupos" class="empty-group-img">
-            <h2>Você ainda não faz parte de nenhum grupo</h2>
-            <p>Crie um grupo para começar a colaborar com outros estudantes!</p>
-            <button class="btn btn-primary" id="openCreateGroupModal">
-                <i class="fas fa-users"></i> Criar Grupo
-            </button>
-        </div>
-    </section>
-
     <!-- Modal de criação de grupo -->
     <div class="modal-backdrop" id="modalBackdrop" style="display: none;">
         <div class="modal">
@@ -56,7 +45,6 @@
             </form>
         </div>
     </div>
-
     <script src="{{ url_for('static', filename='js/dashboard/dashboard.js') }}"></script>
 </body>
 </html>

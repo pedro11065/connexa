@@ -12,7 +12,7 @@ window.addEventListener('DOMContentLoaded', function() {
         if (data.success && Array.isArray(data.data) && data.data.length > 0) {
             renderChatDashboard(data.data);
         } else {
-            document.querySelector('.dashboard-container').style.display = 'flex';
+            renderNoGroupPage();
         }
     })
     .catch(error => {
@@ -20,8 +20,39 @@ window.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+
+function renderNoGroupPage() {
+    let chatDiv = document.getElementById('chat-dashboard');
+    if (chatDiv) chatDiv.style.display = 'none';
+    let noGroupDiv = document.getElementById('no-group-page');
+    if (!noGroupDiv) {
+        noGroupDiv = document.createElement('section');
+        noGroupDiv.className = 'dashboard-container';
+        noGroupDiv.id = 'no-group-page';
+        noGroupDiv.innerHTML = `
+            <div class="empty-group">
+                <img src="/static/images/index/hero.png" alt="Sem grupos" class="empty-group-img">
+                <h2>Você ainda não faz parte de nenhum grupo</h2>
+                <p>Crie um grupo para começar a colaborar com outros estudantes!</p>
+                <button class="btn btn-primary" id="openCreateGroupModal">
+                    <i class="fas fa-users"></i> Criar Grupo
+                </button>
+            </div>
+        `;
+        document.body.appendChild(noGroupDiv);
+        document.getElementById('openCreateGroupModal').onclick = function() {
+            document.getElementById('modalBackdrop').style.display = 'flex';
+        };
+    } else {
+        noGroupDiv.style.display = 'flex';
+    }
+}
+
+
+
 function renderChatDashboard(grupos) {
-    document.querySelector('.dashboard-container').style.display = 'none';
+    let noGroupDiv = document.getElementById('no-group-page');
+    if (noGroupDiv) noGroupDiv.style.display = 'none';
     let chatDiv = document.getElementById('chat-dashboard');
     if (!chatDiv) {
         chatDiv = document.createElement('div');
@@ -38,6 +69,7 @@ function renderChatDashboard(grupos) {
                         </li>
                     `).join('')}
                 </ul>
+                <button class="btn btn-primary" id="sidebarCreateGroupBtn" style="margin:1.5rem 1rem 1rem 1rem;width:calc(100% - 2rem);">Criar grupo</button>
             </aside>
             <main class="chat-main-area">
                 <header class="chat-header">
@@ -60,10 +92,17 @@ function renderChatDashboard(grupos) {
                 renderGroupChatPlaceholder(groupName);
             });
         });
+        // Botão criar grupo na sidebar
+        document.getElementById('sidebarCreateGroupBtn').onclick = function() {
+            document.getElementById('modalBackdrop').style.display = 'flex';
+        };
     } else {
         chatDiv.style.display = 'block';
     }
 }
+
+
+
 
 function renderGroupChatPlaceholder(groupName) {
     const chatDiv = document.getElementById('chat-dashboard');
@@ -85,6 +124,37 @@ function renderGroupChatPlaceholder(groupName) {
     // Foco no input ao abrir
     const input = main.querySelector('.chat-message-input');
     if (input) input.focus();
+
+    // Envio de mensagem
+    const form = main.querySelector('.chat-message-bar');
+    form.onsubmit = function(e) {
+        e.preventDefault();
+        const message = input.value.trim();
+        if (!message) return;
+        // Pegando o grupo selecionado
+        const activeGroup = document.querySelector('.group-item.active');
+        if (!activeGroup) return;
+        const groupId = activeGroup.getAttribute('data-group');
+        const now = new Date();
+        fetch('/dashboard/messages/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                groupId: groupId,
+                message: message
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                input.value = '';
+                // Aqui você pode adicionar a mensagem na tela sem recarregar
+            } else {
+                alert('Erro ao enviar mensagem.');
+            }
+        })
+        .catch(() => alert('Erro ao enviar mensagem.'));
+    };
 }
 
 document.getElementById('openCreateGroupModal').onclick = function() {
@@ -107,6 +177,9 @@ document.getElementById('createGroupForm').onsubmit = function(e) {
         alert('Preencha todos os campos.');
         return;
     }
+
+
+
     fetch('create/group', {
         method: 'POST',
         headers: {

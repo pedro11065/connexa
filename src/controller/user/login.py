@@ -12,7 +12,7 @@ def process_login(data):
     email = data.get('email')
     password = data.get('senha')
 
-    user_data = db.users.read(email)
+    user_data = db.users.read(email)[1]
 
     print(Fore.GREEN + '\n[API Login] ' + Style.RESET_ALL + f'Dados recebidos: \nEmail/cpf: {email}\nSenha: {password}')
 
