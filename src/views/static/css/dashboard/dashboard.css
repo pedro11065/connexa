@@ -48,13 +48,13 @@ body {
 }
 
 .btn-primary {
-    background: #ffd400;
-    color: #2d2350;
+    background: linear-gradient(90deg, #8A2BE2 0%, #9370DB 100%);
+    color: #fff;
     font-weight: 600;
 }
 
 .btn-primary:hover {
-    background: #e0b000;
+    background: linear-gradient(90deg, #9370DB 0%, #8A2BE2 100%);
 }
 
 .btn-secondary {

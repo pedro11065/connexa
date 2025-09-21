@@ -83,7 +83,6 @@ function renderChatDashboard(grupos) {
         </div>
         `;
         document.body.appendChild(chatDiv);
-        // Evento de seleção de grupo
         chatDiv.querySelectorAll('.group-item').forEach(item => {
             item.addEventListener('click', function() {
                 chatDiv.querySelectorAll('.group-item').forEach(i => i.classList.remove('active'));
@@ -92,17 +91,18 @@ function renderChatDashboard(grupos) {
                 renderGroupChatPlaceholder(groupName);
             });
         });
-        // Botão criar grupo na sidebar
-        document.getElementById('sidebarCreateGroupBtn').onclick = function() {
-            document.getElementById('modalBackdrop').style.display = 'flex';
-        };
+        setTimeout(function() {
+            var btn = document.getElementById('sidebarCreateGroupBtn');
+            if (btn) {
+                btn.onclick = function() {
+                    document.getElementById('modalBackdrop').style.display = 'flex';
+                };
+            }
+        }, 0);
     } else {
         chatDiv.style.display = 'block';
     }
 }
-
-
-
 
 function renderGroupChatPlaceholder(groupName) {
     const chatDiv = document.getElementById('chat-dashboard');
@@ -110,51 +110,44 @@ function renderGroupChatPlaceholder(groupName) {
     const main = chatDiv.querySelector('.chat-main-area');
     if (!main) return;
     main.innerHTML = `
-        <header class="chat-header">
-            <span class="chat-group-header-title">${groupName}</span>
+        <header class="chat-header" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+            <span class="chat-group-header-title" style="flex:0 0 auto;">${groupName}</span>
+            <div class="chat-search-bar" style="flex:1; display:flex; justify-content:center;">
+                <input type="text" class="chat-search-input" placeholder="Pesquisar mensagens ou membros..." style="max-width:320px; width:100%; padding:0.5rem 1rem; border-radius:2rem; border:1px solid #eee; font-size:1rem; background:#fff;" />
+            </div>
+            <div class="chat-header-menu" style="position:relative; flex:0 0 auto;">
+                <button class="chat-menu-btn" id="chatMenuBtn" style="background:none; border:none; font-size:1.7rem; color:#fff; cursor:pointer; padding:0 0.5rem;">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <div class="chat-menu-dropdown" id="chatMenuDropdown" style="display:none; position:absolute; right:0; top:2.5rem; background:#fff; box-shadow:0 4px 16px rgba(0,0,0,0.13); border-radius:0.7rem; min-width:180px; z-index:10;">
+                    <button class="chat-menu-item" id="menuViewDetails" style="width:100%;padding:0.8rem 1.2rem; background:none; border:none; text-align:left; font-size:1rem; cursor:pointer;">Ver detalhes</button>
+                    <button class="chat-menu-item" id="menuEditGroup" style="width:100%;padding:0.8rem 1.2rem; background:none; border:none; text-align:left; font-size:1rem; cursor:pointer;">Editar grupo</button>
+                    <button class="chat-menu-item" id="menuLeaveGroup" style="width:100%;padding:0.8rem 1.2rem; background:none; border:none; text-align:left; color:#d32f2f; font-size:1rem; cursor:pointer;">Sair do grupo</button>
+                </div>
+            </div>
         </header>
-        <div class="chat-messages-area">
-            <div class="chat-messages-list"></div>
-            <form class="chat-message-bar" onsubmit="return false;">
-                <input type="text" class="chat-message-input" placeholder="Digite uma mensagem..." autocomplete="off" />
-                <button type="submit" class="chat-send-btn"><i class="fas fa-paper-plane"></i></button>
-            </form>
+        <div class="chat-placeholder">
+            <div class="chat-empty-icon"><i class="fas fa-comments"></i></div>
+            <div class="chat-empty-text">Chat em desenvolvimento.<br><span style='color:#888;font-size:0.95em'>(Em breve você poderá conversar com seu grupo aqui!)</span></div>
         </div>
     `;
-    // Foco no input ao abrir
-    const input = main.querySelector('.chat-message-input');
-    if (input) input.focus();
-
-    // Envio de mensagem
-    const form = main.querySelector('.chat-message-bar');
-    form.onsubmit = function(e) {
-        e.preventDefault();
-        const message = input.value.trim();
-        if (!message) return;
-        // Pegando o grupo selecionado
-        const activeGroup = document.querySelector('.group-item.active');
-        if (!activeGroup) return;
-        const groupId = activeGroup.getAttribute('data-group');
-        const now = new Date();
-        fetch('/dashboard/messages/send', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                groupId: groupId,
-                message: message
-            })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                input.value = '';
-                // Aqui você pode adicionar a mensagem na tela sem recarregar
-            } else {
-                alert('Erro ao enviar mensagem.');
+    // Dropdown menu toggle
+    const menuBtn = main.querySelector('#chatMenuBtn');
+    const menuDropdown = main.querySelector('#chatMenuDropdown');
+    if (menuBtn && menuDropdown) {
+        menuBtn.onclick = function(e) {
+            e.stopPropagation();
+            menuDropdown.style.display = menuDropdown.style.display === 'block' ? 'none' : 'block';
+        };
+        // Fecha o menu ao clicar fora
+        document.addEventListener('click', function closeMenu(ev) {
+            if (!menuDropdown.contains(ev.target) && ev.target !== menuBtn) {
+                menuDropdown.style.display = 'none';
+                document.removeEventListener('click', closeMenu);
             }
-        })
-        .catch(() => alert('Erro ao enviar mensagem.'));
-    };
+        });
+    }
+    // (Os eventos dos itens do menu podem ser implementados depois)
 }
 
 document.getElementById('openCreateGroupModal').onclick = function() {
