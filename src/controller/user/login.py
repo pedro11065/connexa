@@ -12,29 +12,33 @@ def process_login(data):
     email = data.get('email')
     password = data.get('senha')
 
-    user_data = db.users.read(email)[1]
-
     print(Fore.GREEN + '\n[API Login] ' + Style.RESET_ALL + f'Dados recebidos: \nEmail/cpf: {email}\nSenha: {password}')
 
-    if user_data and check_password_hash(user_data['senha_hash'], password):
+    # Corrige a verificação da consulta ao banco
+    user_result = db.users.read(email)
+    
+    if user_result[0] and user_result[1]:  # Verifica se a consulta foi bem-sucedida
+        user_data = user_result[1]
         
-        user = User(
-            id=user_data['id'],
-            nome=user_data['nome'],
-            email=user_data['email'],
-            senha=user_data['senha_hash']           
-        )
+        if check_password_hash(user_data['senha_hash'], password):
+            
+            user = User(
+                id=user_data['id'],
+                nome=user_data['nome'],
+                email=user_data['email'],
+                senha=user_data['senha_hash']           
+            )
 
-        login_user(user)
-        id = user_data['id']
+            login_user(user)
+            id = user_data['id']
 
-        
-        if db.participants.read(id, None):
-            print(Fore.GREEN + '[API Login] ' + Style.RESET_ALL + f'Usuário está relacionado a uma empresa!')
-            return jsonify({'login': True, 'redirect_url': '/dashboard/user'}), 200
-        else:
-            print(Fore.GREEN + '[API Login] ' + Style.RESET_ALL + f'Usuário não está relacionado a uma empresa!')
-            return jsonify({'login': True, 'redirect_url': '/dashboard/user'}), 200      
+            
+            if db.participants.read(id, None):
+                print(Fore.GREEN + '[API Login] ' + Style.RESET_ALL + f'Usuário está relacionado a uma empresa!')
+                return jsonify({'login': True, 'redirect_url': '/dashboard/user'}), 200
+            else:
+                print(Fore.GREEN + '[API Login] ' + Style.RESET_ALL + f'Usuário não está relacionado a uma empresa!')
+                return jsonify({'login': True, 'redirect_url': '/dashboard/user'}), 200      
 
     
     print(Fore.RED + '[API Login] ' + Style.RESET_ALL + f'Login mal sucedido, a senha ou email/cpf está incorreto.')

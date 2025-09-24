@@ -1,10 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("registerForm");
-    
+
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
         clearErrors();
-        
+
         if (!validateForm()) {
             return;
         }
@@ -14,8 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
             email: document.getElementById('email').value.trim(),
             senha: document.getElementById('password').value, // Add password field
             curso: document.getElementById('course').value.trim(),
-            periodo: document.getElementById('period').value,
-            status: document.getElementById('status').value
+            periodo: document.getElementById('period').value
         };
 
         try {
@@ -61,7 +60,6 @@ function validateForm() {
     const email = document.getElementById('email').value.trim();
     const course = document.getElementById('course').value.trim();
     const period = document.getElementById('period').value;
-    const status = document.getElementById('status').value;
 
     if (name.length < 3) {
         displayError('name', 'Nome deve ter pelo menos 3 caracteres');
@@ -80,11 +78,6 @@ function validateForm() {
 
     if (!period) {
         displayError('period', 'Selecione um período');
-        isValid = false;
-    }
-
-    if (!status) {
-        displayError('status', 'Selecione um status');
         isValid = false;
     }
 

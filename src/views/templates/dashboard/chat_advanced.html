@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Conexão Acadêmica — Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard/chat_advanced.css') }}">
+</head>
+
+<body>
+    <div class="decor">
+        <div class="glow g1"></div>
+        <div class="glow g2"></div>
+    </div>
+
+    <div class="app">
+        <aside class="groups-sidebar" id="groupsSidebar">
+        </aside>
+
+        <div class="main-content">
+            <aside class="members-drawer" id="membersDrawer"></aside>
+
+            <section class="center" id="centerPanel">
+                <div class="topbar">
+                    <div class="title-wrap">
+                        <img src="https://i.pravatar.cc/46?img=5" class="avatar" id="topAvatar">
+                        <div>
+                            <div class="chat-title" id="chatTitle"></div>
+                            <div style="font-size:13px;color:var(--muted); display:flex; align-items:center;">
+                                <span id="chatSubtitle"></span>
+                                <span id="typingIndicator">digitando...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="top-actions">
+                        <button class="icon-btn" id="themeToggleBtn" title="Alternar Tema">☀️</button>
+                        <button class="icon-btn" id="membersBtn" title="Membros">👥</button>
+                        <button class="icon-btn" id="wallBtn" title="Wallpapers">🖼️</button>
+                    </div>
+                </div>
+
+                <div class="messages" id="messages">
+                </div>
+
+                <div class="composer">
+                    <div class="input">
+                        <button class="circle-btn" id="attachBtn" title="Anexar">📎</button>
+                        <textarea id="input" placeholder="Escreva uma mensagem..."></textarea>
+                        <div class="actions">
+                            <button class="circle-btn" id="emojiBtn" title="Emoji">😊</button>
+                            <button class="circle-btn" id="photoBtn" title="Enviar foto">🖼️</button>
+                            <button class="circle-btn" id="audioBtn" title="Áudio">🎙️</button>
+                        </div>
+                    </div>
+                    <button class="send-btn" id="sendBtn" title="Enviar">➤</button>
+                </div>
+            </section>
+
+            <aside class="wallpaper-drawer" id="wallpaperDrawer">
+                <h3>Escolha um wallpaper</h3>
+                <div id="wallList" style="margin-top:12px;">
+                </div>
+                <div style="margin-top:8px;font-size:13px;color:var(--muted)">Tema atual aplicado ao painel de mensagens.</div>
+            </aside>
+            <div class="overlay" id="overlay"></div>
+        </div>
+    </div>
+
+    <div class="members-modal" id="membersModal" aria-hidden="true">
+        <div class="members-header">
+            <div class="members-header-top">
+                <strong>Membros do Grupo</strong>
+                <button onclick="closeModal()" style="background:none; border:none; color:var(--text-color); font-size:24px; cursor:pointer;">&times;</button>
+            </div>
+            <input type="text" id="memberSearchInput" placeholder="Buscar membros...">
+        </div>
+        <div class="members-list" id="membersListModal">
+        </div>
+    </div>
+
+    <div class="emoji-drawer" id="emojiDrawer" aria-hidden="true">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <strong>Emojis</strong>
+            <div style="color:var(--muted);font-size:13px">Clique para inserir</div>
+        </div>
+        <div class="emoji-grid" id="emojiGrid"></div>
+    </div>
+
+    <div id="reactionMenu" style="display:none; position:absolute; z-index:999;"></div>
+
+    <input type="file" accept="image/*" id="fileInput" style="display:none" />
+
+    <!-- Modal de criação de grupo -->
+    <div class="modal-backdrop" id="modalBackdrop" style="display: none;">
+        <div class="modal">
+            <h3>Criar Novo Grupo</h3>
+            <form id="createGroupForm">
+                <div class="form-group">
+                    <label for="groupName">Nome do Grupo</label>
+                    <input type="text" id="groupName" name="groupName" placeholder="Digite o nome do grupo" required>
+                </div>
+                <div class="form-group">
+                    <label for="groupMateria">Matéria</label>
+                    <input type="text" id="groupMateria" name="groupMateria" placeholder="Ex: Matemática, Física" required>
+                </div>
+                <div class="form-group">
+                    <label for="groupObjetivo">Objetivo</label>
+                    <input type="text" id="groupObjetivo" name="groupObjetivo" placeholder="Descreva o objetivo do grupo" required>
+                </div>
+                <div class="form-group">
+                    <label for="groupLocal">Local</label>
+                    <select id="groupLocal" name="groupLocal" required>
+                        <option value="">Selecione</option>
+                        <option value="online">Online</option>
+                        <option value="presencial">Presencial</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="groupEmails">Participantes (e-mails, separados por vírgula)</label>
+                    <input type="text" id="groupEmails" name="groupEmails" placeholder="exemplo@email.com, outro@email.com" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Criar</button>
+                    <button type="button" class="btn btn-secondary" id="closeModal">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/dashboard/chat_advanced.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dashboard/group.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dashboard/modal.js') }}"></script>
+</body>
+</html>

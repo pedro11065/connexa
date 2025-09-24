@@ -6,13 +6,13 @@ from src.model.db.DbController import Db; db = Db()
 from colorama import Fore, Style
 
 def process_registration(create_data):
-    # Espera um JSON com as chaves: nome, email, senha, curso, periodo, status
+    # Espera um JSON com as chaves: nome, email, senha, curso, periodo
     nome = create_data.get('nome')
     email = create_data.get('email')
     senha = create_data.get('senha')
     curso = create_data.get('curso')
     periodo = create_data.get('periodo')
-    status = create_data.get('status')
+    status = "Ativo"  # Status padrão para todos os novos usuários
 
     # Validação de email pode ser mantida se necessário
     errors, _, email_error = validate_cpf_and_email(None, email)

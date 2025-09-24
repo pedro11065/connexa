@@ -53,6 +53,10 @@ class Users:
         cur = db.conn.cursor()
 
         try:
+            if search_data is None:
+                print(Fore.RED + '[Banco de dados] ' + Style.RESET_ALL + 'Dados de busca são nulos.')
+                return False, []
+                
             if len(search_data) == 36:  # UUID
                 print(Fore.CYAN + '[Banco de dados] ' + Style.RESET_ALL + f'Pesquisando usuário por id: {search_data}')
                 cur.execute("SELECT * FROM usuarios WHERE id = %s;", (search_data,))
@@ -125,7 +129,7 @@ class Users:
             values.append(user_id)
             query = f"UPDATE usuarios SET {', '.join(fields)} WHERE id = %s;"
             cur.execute(query, tuple(values))
-            conn.commit()
+            db.conn.commit()
             print(Fore.GREEN + '[Alteração de dados] ' + Style.RESET_ALL + 'Ação realizada com sucesso!')
             return True
         except Exception as e:
