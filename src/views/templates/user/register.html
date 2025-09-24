@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro - Connexa</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/user/register.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&display=swap"
+        rel="stylesheet" />
 </head>
+
 <body>
     <div class="container">
         <div class="form-wrapper">
             <h1>Criar Conta</h1>
             <p class="subtitle">Preencha seus dados para começar</p>
-            
+
             <form id="registerForm" action="/user/register" method="post" novalidate>
                 <div class="form-row">
                     <div class="form-group">
@@ -58,19 +61,6 @@
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Status</label>
-                        <select id="status" name="status">
-                            <option value="">Selecione o status</option>
-                            <option value="ativo">Ativo</option>
-                            <option value="bloqueado">Bloqueado</option>
-                            <option value="pendente">Pendente</option>
-                        </select>
-                        <span class="error" id="status-error"></span>
-                    </div>
-                </div>
-
                 <div class="button-group">
                     <button type="submit" class="register-btn">Registrar</button>
                     <button type="button" class="login-btn" onclick="window.location.href='/user/login'">
@@ -82,4 +72,5 @@
     </div>
     <script src="{{ url_for('static', filename='js/user/register.js') }}"></script>
 </body>
+
 </html>

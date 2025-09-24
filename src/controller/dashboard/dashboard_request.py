@@ -14,7 +14,13 @@ dashboard_request = Blueprint('auth_dashboard', __name__, template_folder='templ
 def dashboard():
     if request.method == 'POST':    
         user_id = str(current_user.id)
-        return Group.info_groups(user_id, request)
+        request_data = request.get_json()
+        request_type = request_data.get('type') if request_data else None
+        
+        if request_type == 'user_info':
+            return jsonify({'success': True, 'user_id': user_id, 'user_name': current_user.nome})
+        else:
+            return Group.info_groups(user_id, request)
     
     if request.method == 'GET':
         return render_template('dashboard/dashboard.html')
@@ -50,3 +56,14 @@ def readMessages():
     if request.method == 'GET':
         user_id = str(current_user.id)
         return Group.read_messages(user_id)
+        
+@dashboard_request.route(f'messages/read/<group_id>', methods=['GET']) 
+@login_required
+def read_group_messages(group_id):
+    user_id = str(current_user.id)
+    return Group.read_messages(user_id, group_id)
+
+@dashboard_request.route(f'chat/advanced', methods=['GET']) 
+@login_required
+def chat_advanced():
+    return render_template('dashboard/chat_advanced.html')
