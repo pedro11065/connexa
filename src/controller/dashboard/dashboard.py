@@ -28,6 +28,22 @@ class Group:
             return jsonify({'success': True, 'message': 'Grupo criado com sucesso!'}), 200
         else:
             return jsonify({'success': False, 'message': 'Erro ao criar o grupo.'}), 500
+        
+
+    @staticmethod
+    def read_group(user_id, request):
+
+        request = request.get_json()
+        id_group = request.get('id_group')
+        
+        # Cria o grupo
+        i = db.groups.read(id_group) 
+        
+
+        if i[0]:
+            return jsonify({'success': True, 'data': i[1], 'message': 'Grupo encontrado com sucesso!'}), 200
+        else:
+            return jsonify({'success': False, 'data': i[1], 'message': 'Erro ao encontrar o grupo.'}), 500
             
 
     @staticmethod
@@ -84,7 +100,6 @@ class Group:
                     user = db.users.read(id)
 
                     if user[0]:
-                        print(user[1])
                         ids.append(user[1]["id"])
                         users.append(user[1])
 
