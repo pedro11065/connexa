@@ -51,10 +51,12 @@ def create_app():
     from .controller.index import index
     from .controller.user.user_request import user_request
     from .controller.dashboard.dashboard_request import dashboard_request
+    from .controller.chat.chat_request import chat_request  # added
 
     # Registra os Blueprints com os URLs corretamente definidos
     app.register_blueprint(index, url_prefix='/home' and '/')
     app.register_blueprint(user_request, url_prefix='/user')
     app.register_blueprint(dashboard_request, url_prefix='/dashboard')
+    app.register_blueprint(chat_request, url_prefix='/chat')  # added
     
     return app

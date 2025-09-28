@@ -1,9 +1,6 @@
-// Lógica de abrir/fechar modal
-
-document.getElementById('openCreateGroupModal').onclick = function() {
-    document.getElementById('modalBackdrop').style.display = 'flex';
-};
-
-document.getElementById('closeModal').onclick = function() {
-    document.getElementById('modalBackdrop').style.display = 'none';
-};
+// Lógica de criação/abertura de modal movida para group.js
+document.addEventListener('DOMContentLoaded', () => {
+	// Bridge only: if buttons exist, delegate to Group
+	document.getElementById('openCreateGroupModal')?.addEventListener('click', () => window.Group?.openCreateGroupModal?.());
+	document.getElementById('closeModal')?.addEventListener('click', () => window.Group?.closeCreateGroupModal?.());
+});

@@ -1,9 +1,7 @@
 from flask import Blueprint, request, render_template, redirect, session, jsonify
 from flask_login import logout_user, login_required, current_user
-from src import cache
 
 from src.controller.dashboard.dashboard import Group
-# Tudo aqui é: /user...
 
 dashboard_request = Blueprint('auth_dashboard', __name__, template_folder='templates', static_folder='static')
 
@@ -18,7 +16,7 @@ def dashboard():
         request_type = request_data.get('type') if request_data else None
         
         if request_type == 'user_info':
-            return jsonify({'success': True, 'user_id': user_id, 'user_name': current_user.nome})
+            return jsonify({'success': True, 'user_id': user_id, 'user_name': current_user.fullname})
         else:
             return Group.info_groups(user_id, request)
     
@@ -40,30 +38,3 @@ def readGroup():
     if request.method == 'GET':
         user_id = str(current_user.id)
         return Group.read_group(user_id, request)
-    
-    
-@dashboard_request.route(f'create/message', methods=['POST','GET']) 
-@login_required
-def sendMessage():
-    if request.method == 'POST':
-        user_id = str(current_user.id)
-        return Group.create_message(user_id, request)
-    
-
-@dashboard_request.route(f'read/messages', methods=['POST','GET']) 
-@login_required
-def readMessages():
-    if request.method == 'GET':
-        user_id = str(current_user.id)
-        return Group.read_messages(user_id)
-        
-@dashboard_request.route(f'messages/read/<group_id>', methods=['GET']) 
-@login_required
-def read_group_messages(group_id):
-    user_id = str(current_user.id)
-    return Group.read_messages(user_id, group_id)
-
-@dashboard_request.route(f'chat/advanced', methods=['GET']) 
-@login_required
-def chat_advanced():
-    return render_template('dashboard/chat_advanced.html')
