@@ -242,7 +242,6 @@ body {
 .group-item.active,
 .group-item:hover {
     background: linear-gradient(90deg, var(--purple-gradient-start, #8A2BE2) 0%, var(--purple-gradient-end, #9370DB) 100%);
-    color: #fff;
     border: 1px solid var(--purple-gradient-end, #9370DB);
     box-shadow: 0 2px 8px rgba(138, 43, 226, 0.08);
 }
