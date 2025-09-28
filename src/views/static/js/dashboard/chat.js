@@ -911,6 +911,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         await loadMessages();
         renderMessages();
+
+        // Adiciona polling para novas mensagens a cada 2 segundos
+        if (window.__chatPollingInterval) clearInterval(window.__chatPollingInterval);
+        window.__chatPollingInterval = setInterval(async () => {
+            const prevMsgs = state.messagesByGroup[state.currentGroupId] || [];
+            await loadMessages();
+            const newMsgs = state.messagesByGroup[state.currentGroupId] || [];
+            // Atualiza apenas se houver novas mensagens
+            if (newMsgs.length !== prevMsgs.length) {
+                renderMessages();
+            }
+        }, 2000);
     }
 
     async function loadMessages() {

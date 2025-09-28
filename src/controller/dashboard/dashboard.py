@@ -22,7 +22,8 @@ class Group:
 
             for email in emails:
                 user = db.users.read(email)
-                db.participants.create(user["id"], i[1]) 
+                print(user)
+                db.participants.create(user[1]["id"], i[1]) 
             
         if i:
             return jsonify({'success': True, 'message': 'Grupo criado com sucesso!'}), 200
