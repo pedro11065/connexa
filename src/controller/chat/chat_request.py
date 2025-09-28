@@ -23,8 +23,7 @@ def readMessages():
 @chat_request.route('/messages/read/<group_id>', methods=['GET'])
 @login_required
 def read_group_messages(group_id):
-    user_id = str(current_user.id)
-    return Chat.read_messages(user_id, group_id)
+    return Chat.read_messages(group_id)
 
 # /dashboard/chat/advanced (assuming blueprint is registered under /dashboard/chat)
 @chat_request.route('/advanced', methods=['GET'])

@@ -1,5 +1,5 @@
-
 import uuid
+import traceback
 from src.settings.colors import *
 from src.model.db.DbConnect import *
 from src.model.classes.user import *
@@ -88,6 +88,7 @@ class Users:
         
         except Exception as error:
             print(Fore.RED + '[Banco de dados] ' + Style.RESET_ALL + f'Houve um erro: {error}')
+            print(Fore.RED + '[Banco de dados] ' + Style.RESET_ALL + 'Traceback:\n' + traceback.format_exc())
             return False, []
         
         finally:
@@ -134,6 +135,7 @@ class Users:
             return True
         except Exception as e:
             print(Fore.RED + '[Alteração de dados] ' + Style.RESET_ALL + f'Ocorreu um erro: {e}')
+            print(Fore.RED + '[Alteração de dados] ' + Style.RESET_ALL + 'Traceback:\n' + traceback.format_exc())
             return False
         finally:
             cur.close()

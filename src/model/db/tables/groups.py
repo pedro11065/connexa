@@ -1,5 +1,6 @@
 import psycopg2
 import uuid
+import traceback
 from src.settings.colors import *
 from src.model.db.DbConnect import *
 
@@ -31,6 +32,7 @@ class Groups:
         
         except Exception as e:
             print(cyan("[Banco de dados]: ") + red(f'Erro ao criar grupo de estudo: {e}'))
+            print(cyan("[Banco de dados]: ") + red('Traceback:\n' + traceback.format_exc()))
             return False, None
         finally:
             cur.close()
@@ -49,6 +51,7 @@ class Groups:
             return True
         except Exception as e:
             print(red(f'Erro ao deletar grupo: {e}'))
+            print(red('Traceback:\n' + traceback.format_exc()))
             return False
         finally:
             cur.close()
@@ -161,6 +164,7 @@ class Groups:
         
         except Exception as e:
             print(red(f'Erro ao atualizar grupo: {e}'))
+            print(red('Traceback:\n' + traceback.format_exc()))
             return False
         
         finally:

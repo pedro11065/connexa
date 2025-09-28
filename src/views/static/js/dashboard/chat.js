@@ -375,7 +375,6 @@ class ChatAdvanced {
         if (!text || !this.currentGroupId) return;
 
         try {
-            // changed: use chat create endpoint
             const response = await fetch('/chat/messages/create', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -389,11 +388,26 @@ class ChatAdvanced {
             if (data.success) {
                 this.input.value = '';
                 if (!this.messages[this.currentGroupId]) this.messages[this.currentGroupId] = [];
+                // prefer server-provided id and created_at
+                const createdAt =
+                    data.created_at ??
+                    data.data?.created_at ??
+                    data.message?.created_at ??
+                    data.createdAt ??
+                    data.timestamp ??
+                    Date.now();
+
+                const newId =
+                    data.id ??
+                    data.data?.id ??
+                    data.message?.id ??
+                    Date.now();
+
                 this.messages[this.currentGroupId].push({
-                    id: data.id || Date.now(),
+                    id: newId,
                     text,
                     type: 'sent',
-                    timestamp: new Date()
+                    timestamp: this.parseTimestamp(createdAt)
                 });
                 this.renderMessages();
             } else {
@@ -690,14 +704,19 @@ class ChatAdvanced {
                 msg?.createdAt ??
                 msg?.timestamp ??
                 msg?.data ??
+                msg?.hora ??
+                msg?.horario ??
+                msg?.hora_envio ??
+                msg?.horario_envio ??
+                msg?.time ??
                 null
             )
         };
     }
 
-    // NEW: safe timestamp parser (supports ISO, millis, and seconds)
+    // NEW: safe timestamp parser (supports ISO, millis, seconds, and common server formats)
     parseTimestamp(raw) {
-        if (!raw) return null;
+        if (raw === null || raw === undefined) return null;
         if (raw instanceof Date) return isNaN(raw.getTime()) ? null : raw;
 
         // numbers can be seconds or millis
@@ -707,16 +726,84 @@ class ChatAdvanced {
             return isNaN(d.getTime()) ? null : d;
         }
 
-        // strings
-        const d1 = new Date(raw);
-        if (!isNaN(d1.getTime())) return d1;
+        if (typeof raw === 'string') {
+            let s = raw.trim();
 
-        // try integer string
-        const n = Number(raw);
-        if (!Number.isNaN(n)) {
-            const ms = n < 1e12 ? n * 1000 : n;
-            const d2 = new Date(ms);
-            return isNaN(d2.getTime()) ? null : d2;
+            // time-only "HH:mm" or "HH:mm:ss"
+            const mTime = /^(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(s);
+            if (mTime) {
+                const now = new Date();
+                const h = parseInt(mTime[1], 10);
+                const mi = parseInt(mTime[2], 10);
+                const se = mTime[3] ? parseInt(mTime[3], 10) : 0;
+                const d = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, mi, se);
+                return isNaN(d.getTime()) ? null : d;
+            }
+
+            // Try ISO-like normalization (supports space/T, fractional secs, and timezone)
+            if (/^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}/.test(s)) {
+                let iso = s.replace(' ', 'T');
+
+                // Normalize timezone like +0000 -> +00:00
+                iso = iso.replace(/([+-]\d{2})(\d{2})$/, '$1:$2');
+
+                // Normalize fractional seconds to milliseconds:
+                // - If more than 3 digits, keep first 3
+                iso = iso.replace(/(\.\d{3})\d+(?=(Z|[+-]\d{2}:?\d{2})?$)/, '$1');
+                // - If 1-2 digits, pad to 3
+                iso = iso.replace(/(\.\d{1,2})(?=(Z|[+-]\d{2}:?\d{2})?$)/, (_m, g1) => {
+                    return '.' + g1.slice(1).padEnd(3, '0');
+                });
+
+                const dIso = new Date(iso);
+                if (!isNaN(dIso.getTime())) return dIso;
+            }
+
+            // "YYYY-MM-DD HH:mm[:ss[.frac]]" (local time)
+            const mYmd = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,6}))?)?$/.exec(s);
+            if (mYmd) {
+                const [_, Y, M, D, h, mi, se, frac] = mYmd;
+                const ms = frac ? parseInt((frac + '000').slice(0, 3), 10) : 0;
+                const d = new Date(
+                    parseInt(Y, 10),
+                    parseInt(M, 10) - 1,
+                    parseInt(D, 10),
+                    parseInt(h, 10),
+                    parseInt(mi, 10),
+                    se ? parseInt(se, 10) : 0,
+                    ms
+                );
+                return isNaN(d.getTime()) ? null : d;
+            }
+
+            // "DD/MM/YYYY HH:mm[:ss[.frac]]" (local time)
+            const mDmy = /^(\d{2})\/(\d{2})\/(\d{4})[ T](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,6}))?)?$/.exec(s);
+            if (mDmy) {
+                const [_, D, M, Y, h, mi, se, frac] = mDmy;
+                const ms = frac ? parseInt((frac + '000').slice(0, 3), 10) : 0;
+                const d = new Date(
+                    parseInt(Y, 10),
+                    parseInt(M, 10) - 1,
+                    parseInt(D, 10),
+                    parseInt(h, 10),
+                    parseInt(mi, 10),
+                    se ? parseInt(se, 10) : 0,
+                    ms
+                );
+                return isNaN(d.getTime()) ? null : d;
+            }
+
+            // try native parser (ISO etc.)
+            const d1 = new Date(s);
+            if (!isNaN(d1.getTime())) return d1;
+
+            // try integer string
+            const n = Number(s);
+            if (!Number.isNaN(n)) {
+                const ms = n < 1e12 ? n * 1000 : n;
+                const d2 = new Date(ms);
+                return isNaN(d2.getTime()) ? null : d2;
+            }
         }
         return null;
     }
@@ -781,7 +868,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             </header>
-            <div class="chat-container" id="chatContainer" style="display:flex;flex-direction:column;flex:1;height:calc(100% - 70px);">
+            <div class="chat-container" id="chatContainer" style="display:flex;flex-direction:column;flex:1;">
                 <div class="chat-messages-container" id="chatMessages" style="flex:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column;gap:0.5rem;"></div>
                 <div class="chat-input-container" style="padding:1rem;border-top:1px solid #eee;background:#fff;">
                     <div class="chat-input-wrapper" style="display:flex;gap:0.5rem;align-items:center;">
@@ -851,6 +938,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         m.createdAt ??
                         m.timestamp ??
                         m.data ??
+                        m.hora ??
+                        m.horario ??
+                        m.hora_envio ??
+                        m.horario_envio ??
+                        m.time ??
                         null
                     )
                 }));
@@ -883,11 +975,25 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.success) {
                 input.value = '';
                 const list = state.messagesByGroup[state.currentGroupId] || (state.messagesByGroup[state.currentGroupId] = []);
+                const createdAt =
+                    data.created_at ??
+                    data.data?.created_at ??
+                    data.message?.created_at ??
+                    data.createdAt ??
+                    data.timestamp ??
+                    Date.now();
+
+                const newId =
+                    data.id ??
+                    data.data?.id ??
+                    data.message?.id ??
+                    Date.now();
+
                 list.push({
-                    id: data.id || Date.now(),
+                    id: newId,
                     text,
                     type: 'sent',
-                    timestamp: new Date()
+                    timestamp: parseTimestamp(createdAt)
                 });
                 renderMessages();
             } else {
@@ -971,20 +1077,83 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // NEW: helpers shared in lightweight chat
     function parseTimestamp(raw) {
-        if (!raw) return null;
+        if (raw === null || raw === undefined) return null;
         if (raw instanceof Date) return isNaN(raw.getTime()) ? null : raw;
+
         if (typeof raw === 'number') {
             const ms = raw < 1e12 ? raw * 1000 : raw;
             const d = new Date(ms);
             return isNaN(d.getTime()) ? null : d;
         }
-        const d1 = new Date(raw);
-        if (!isNaN(d1.getTime())) return d1;
-        const n = Number(raw);
-        if (!Number.isNaN(n)) {
-            const ms = n < 1e12 ? n * 1000 : n;
-            const d2 = new Date(ms);
-            return isNaN(d2.getTime()) ? null : d2;
+
+        if (typeof raw === 'string') {
+            let s = raw.trim();
+
+            // time-only "HH:mm" or "HH:mm:ss"
+            const mTime = /^(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(s);
+            if (mTime) {
+                const now = new Date();
+                const h = parseInt(mTime[1], 10);
+                const mi = parseInt(mTime[2], 10);
+                const se = mTime[3] ? parseInt(mTime[3], 10) : 0;
+                const d = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, mi, se);
+                return isNaN(d.getTime()) ? null : d;
+            }
+
+            // ISO-like normalization
+            if (/^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}/.test(s)) {
+                let iso = s.replace(' ', 'T');
+                iso = iso.replace(/([+-]\d{2})(\d{2})$/, '$1:$2'); // +0000 -> +00:00
+                iso = iso.replace(/(\.\d{3})\d+(?=(Z|[+-]\d{2}:?\d{2})?$)/, '$1'); // trim >3
+                iso = iso.replace(/(\.\d{1,2})(?=(Z|[+-]\d{2}:?\d{2})?$)/, (_m, g1) => '.' + g1.slice(1).padEnd(3, '0')); // pad <3
+
+                const dIso = new Date(iso);
+                if (!isNaN(dIso.getTime())) return dIso;
+            }
+
+            // Local YMD
+            const mYmd = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,6}))?)?$/.exec(s);
+            if (mYmd) {
+                const [_, Y, M, D, h, mi, se, frac] = mYmd;
+                const ms = frac ? parseInt((frac + '000').slice(0, 3), 10) : 0;
+                const d = new Date(
+                    parseInt(Y, 10),
+                    parseInt(M, 10) - 1,
+                    parseInt(D, 10),
+                    parseInt(h, 10),
+                    parseInt(mi, 10),
+                    se ? parseInt(se, 10) : 0,
+                    ms
+                );
+                return isNaN(d.getTime()) ? null : d;
+            }
+
+            // Local DMY
+            const mDmy = /^(\d{2})\/(\d{2})\/(\d{4})[ T](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,6}))?)?$/.exec(s);
+            if (mDmy) {
+                const [_, D, M, Y, h, mi, se, frac] = mDmy;
+                const ms = frac ? parseInt((frac + '000').slice(0, 3), 10) : 0;
+                const d = new Date(
+                    parseInt(Y, 10),
+                    parseInt(M, 10) - 1,
+                    parseInt(D, 10),
+                    parseInt(h, 10),
+                    parseInt(mi, 10),
+                    se ? parseInt(se, 10) : 0,
+                    ms
+                );
+                return isNaN(d.getTime()) ? null : d;
+            }
+
+            const d1 = new Date(s);
+            if (!isNaN(d1.getTime())) return d1;
+
+            const n = Number(s);
+            if (!Number.isNaN(n)) {
+                const ms = n < 1e12 ? n * 1000 : n;
+                const d2 = new Date(ms);
+                return isNaN(d2.getTime()) ? null : d2;
+            }
         }
         return null;
     }

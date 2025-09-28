@@ -1,4 +1,5 @@
 import psycopg2, uuid, datetime
+import traceback
 from src.settings.colors import *
 from src.model.db.DbConnect import *
 
@@ -23,6 +24,7 @@ class Participants:
             return True, participante_id
         except Exception as e:
             print(cyan("[Banco de dados]: ") + red(f'Erro ao adicionar participante: {e}'))
+            print(cyan("[Banco de dados]: ") + red('Traceback:\n' + traceback.format_exc()))
             return False, None
         finally:
             cur.close()
@@ -42,6 +44,7 @@ class Participants:
             return True
         except Exception as e:
             print(cyan("[Banco de dados]: ")  + Style.RESET_ALL + f'Erro ao deletar o participante: {e}')
+            print(cyan("[Banco de dados]: ")  + Style.RESET_ALL + 'Traceback:\n' + traceback.format_exc())
             return False
         finally:
             cur.close()
@@ -123,6 +126,7 @@ class Participants:
         
         except Exception as e:
             print(f"{Fore.CYAN}[Banco de dados]{Fore.RED} Erro ao atualizar participante: {e}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}[Banco de dados]{Fore.RED} Traceback:\n{traceback.format_exc()}{Style.RESET_ALL}")
             return False
         
         finally:

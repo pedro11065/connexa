@@ -18,19 +18,12 @@ class Chat:
             return jsonify({'success': False, 'message': 'Erro ao enviar mensagem.'}), 500
 
     @staticmethod
-    def read_messages(user_id, group_id=None):
-        result = db.messages.read(user_id)
+    def read_messages(id):
+        result = db.messages.read(id)
         if not result[0]:
             return jsonify({'success': False, 'message': 'Erro ao ler mensagem.'}), 500
 
         messages = result[1] or []
-
-        # Filtra por grupo, se fornecido
-        if group_id is not None:
-            try:
-                messages = [m for m in messages if str(m.get('group_id')) == str(group_id)]
-            except Exception:
-                pass
 
         # Agrega informações dos usuários relacionados às mensagens
         users = []

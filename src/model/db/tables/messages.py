@@ -1,5 +1,6 @@
 import uuid
 import datetime
+import traceback
 from src.settings.colors import *
 from src.model.db.DbConnect import *
 
@@ -27,6 +28,7 @@ class Messages:
         
         except Exception as e:
             print(cyan("[Banco de dados]: ") + red(f'Erro ao adicionar mensagem: {e}'))
+            print(cyan("[Banco de dados]: ") + red('Traceback:\n' + traceback.format_exc()))
             return False, None
         
         finally:
@@ -50,6 +52,7 @@ class Messages:
         
         except Exception as e:
             print(cyan("[Banco de dados]: ") + red(f'Erro ao deletar a mensagem: {e}'))
+            print(cyan("[Banco de dados]: ") + red('Traceback:\n' + traceback.format_exc()))
             return False
         
         finally:
@@ -65,7 +68,7 @@ class Messages:
         try:
             cur.execute(
                 "SELECT * FROM mensagens WHERE grupo_id = %s OR usuario_id = %s ORDER BY data_envio ASC",
-                (id, id)
+                (id, id)  # single input used for both columns
             )
 
             mensagens = cur.fetchall()
@@ -87,6 +90,7 @@ class Messages:
         
         except Exception as e:
             print(cyan("[Banco de dados]: ") + red(f'Erro ao buscar mensagens: {e}'))
+            print(cyan("[Banco de dados]: ") + red('Traceback:\n' + traceback.format_exc()))
             return False, []
         
         finally:
@@ -124,6 +128,7 @@ class Messages:
         except Exception as e:
 
             print(cyan("[Banco de dados]: ") + red(f'Erro ao atualizar mensagem: {e}'))
+            print(cyan("[Banco de dados]: ") + red('Traceback:\n' + traceback.format_exc()))
             return False
         
         finally:
