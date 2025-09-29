@@ -856,10 +856,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!main) return;
 
         main.innerHTML = `
-            <header class="chat-header" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
-                <span class="chat-group-header-title" style="flex:0 0 auto;">${escapeHtml(state.currentGroupName)}</span>
-                <div style="flex:1"></div>
-                <div class="chat-header-menu" style="position:relative; flex:0 0 auto;">
+            <header class="chat-header">
+                <button class="chat-back-btn" aria-label="Voltar">
+                    <i class="fa fa-arrow-left"></i>
+                </button>
+                <span class="chat-group-header-title">${escapeHtml(state.currentGroupName)}</span>
+                <div class="chat-header-menu" style="position:relative;margin-left:auto;">
                     <button class="chat-menu-btn" id="chatMenuBtn" style="background:none;border:none;font-size:1.7rem;color:#fff;cursor:pointer;padding:0 0.5rem;">
                         <i class="fas fa-ellipsis-v"></i>
                     </button>
@@ -881,7 +883,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-        // Menu
         const menuBtn = main.querySelector('#chatMenuBtn');
         const menuDropdown = main.querySelector('#chatMenuDropdown');
         menuBtn?.addEventListener('click', (e) => {
@@ -898,7 +899,6 @@ document.addEventListener('DOMContentLoaded', () => {
             window.open('/dashboard/chat/advanced', '_blank');
         });
 
-        // Send
         const input = main.querySelector('#chatMessageInput');
         const sendBtn = main.querySelector('#chatSendBtn');
         sendBtn?.addEventListener('click', () => sendMessage());
@@ -912,13 +912,11 @@ document.addEventListener('DOMContentLoaded', () => {
         await loadMessages();
         renderMessages();
 
-        // Adiciona polling para novas mensagens a cada 2 segundos
         if (window.__chatPollingInterval) clearInterval(window.__chatPollingInterval);
         window.__chatPollingInterval = setInterval(async () => {
             const prevMsgs = state.messagesByGroup[state.currentGroupId] || [];
             await loadMessages();
             const newMsgs = state.messagesByGroup[state.currentGroupId] || [];
-            // Atualiza apenas se houver novas mensagens
             if (newMsgs.length !== prevMsgs.length) {
                 renderMessages();
             }

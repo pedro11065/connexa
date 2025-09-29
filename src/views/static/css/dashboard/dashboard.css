@@ -140,6 +140,29 @@ body {
     font-size: 1.2rem;
     font-weight: 600;
     box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+    position: relative;
+}
+
+/* Center the group title in the header */
+.chat-header .chat-group-header-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Hide back button by default (desktop) */
+.chat-back-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: #fff; /* matches header text color */
+    font-size: 1.5rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
 }
 
 .user-info {
@@ -585,6 +608,7 @@ body {
     }
 
     .chat-layout {
+        display: flex;
         flex-direction: column;
     }
 
@@ -594,10 +618,22 @@ body {
         border-bottom: 1px solid #eee;
         height: auto;
         min-height: unset;
+        display: block;
+    }
+
+    .chat-sidebar.hide {
+        display: none !important;
     }
 
     .chat-main-area {
         min-height: 300px;
+        display: none;
+    }
+
+    .chat-main-area.active {
+        display: flex !important;
+        flex-direction: column;
+        flex: 1 1 auto;
     }
 
     .chat-sidebar-header {
@@ -623,5 +659,17 @@ body {
         font-size: 16px;
     }
 
-    /* Prevent zoom on iOS */
+    .chat-back-btn {
+        display: block !important;
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        z-index: 20;
+        background: none;
+        border: none;
+        color: #fff; /* override previous color for contrast on purple header */
+        font-size: 1.5rem;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+    }
 }
