@@ -1,1 +1,0 @@
-; user_email = str(current_user.email)

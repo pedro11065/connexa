@@ -62,7 +62,11 @@ class Group:
             for j in i[1]:
                 
                 k = db.groups.read(j["id_grupo"]) #puxar os dados do grupo
-                l.append(k)
+                if k[0] and k[1]:
+                    # Adiciona uma imagem placeholder para o front-end
+                    group_data = k[1]
+                    group_data['image_url'] = '/static/images/stock/group-stock.jpg'
+                    l.append(group_data)
 
 
             return jsonify({'success': True, 'data':l, 'message': 'Grupo(s) encotrado(s) com sucesso!'}), 200

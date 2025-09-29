@@ -207,6 +207,7 @@ body {
 
 .chat-layout {
     display: flex;
+    height: 100vh;
     flex: 1 1 auto;
     min-height: 0; /* allow children to compute scrollable height */
 }
@@ -218,8 +219,7 @@ body {
     padding: 0;
     box-shadow: 2px 0 8px rgba(138, 43, 226, 0.03);
     overflow-y: auto;
-    height: auto;     /* let flex layout decide */
-    max-height: 100%; /* keep within the viewport */
+    height: 100vh; /* fixed height to match the dashboard */
     display: flex;
     flex-direction: column;
 }
@@ -241,6 +241,40 @@ body {
     text-align: center;
 }
 
+/* NEW: Styles for the create group button container */
+.sidebar-actions {
+    padding: 1rem;
+    border-top: 1px solid #eee;
+    margin-top: auto; /* Pushes this to the bottom in a flex container */
+}
+
+.create-group-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.85rem 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(90deg, var(--purple-gradient-start, #8A2BE2) 0%, var(--purple-gradient-end, #9370DB) 100%);
+    color: #fff;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 4px 12px rgba(138, 43, 226, 0.2);
+}
+
+.create-group-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(138, 43, 226, 0.3);
+}
+
+.create-group-btn i {
+    font-size: 1.1rem;
+}
+
 .chat-sidebar h4 {
     margin-bottom: 1.2rem;
     color: var(--purple-gradient-start, #8A2BE2);
@@ -253,39 +287,85 @@ body {
     padding: 0;
     margin: 0;
     flex: 1;
+    
+    /* NEW: Add padding to the container */
+    padding: 1rem; 
 }
 
 .group-item {
-    padding: 0.9rem 1rem;
-    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem; /* Increased gap */
+    padding: 1rem;
+    margin-bottom: 1rem; /* Increased margin */
     cursor: pointer;
-    background: #f7f7fb;
-    transition: background 0.2s, box-shadow 0.2s;
-    border: 1px solid transparent;
-    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    background: #fff; /* Changed from #f7f7fb */
+    transition: all 0.2s ease-in-out;
+    border: 1px solid #e0e0e0; /* Softer border */
+    border-radius: 12px; /* More rounded corners */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-.group-item.active,
 .group-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    border-color: var(--purple-gradient-start, #8A2BE2);
+}
+
+.group-item.active {
     background: linear-gradient(90deg, var(--purple-gradient-start, #8A2BE2) 0%, var(--purple-gradient-end, #9370DB) 100%);
-    border: 1px solid var(--purple-gradient-end, #9370DB);
-    box-shadow: 0 2px 8px rgba(138, 43, 226, 0.08);
-}
-
-.group-title {
-    font-weight: 600;
-    font-size: 1.05rem;
-}
-
-.group-desc {
-    font-size: 0.95rem;
-    color: #666;
-    margin-top: 0.2rem;
-}
-
-.group-item.active .group-desc,
-.group-item:hover .group-desc {
     color: #fff;
+    border-color: transparent;
+    box-shadow: 0 6px 16px rgba(138, 43, 226, 0.3);
+    transform: translateY(-3px);
+}
+
+/* NEW: Renamed from .group-avatar to be more generic */
+.group-image {
+    width: 60px;   /* Larger image */
+    height: 60px;
+    border-radius: 8px; /* Squarish rounded corners */
+    overflow: hidden;
+    flex-shrink: 0; /* Prevent image from shrinking */
+}
+
+.group-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.group-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column; /* Stack title and description */
+}
+
+.group-title { /* Renamed from .group-name */
+    font-weight: 600;
+    font-size: 1.1rem; /* Larger font */
+    color: #2d2350;
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.group-desc { /* Renamed from .group-last-message */
+    font-size: 0.9rem;
+    color: #666; /* Darker text for better readability */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.group-item.active .group-title {
+    color: #fff;
+}
+
+.group-item.active .group-desc {
+    color: rgba(255, 255, 255, 0.85);
 }
 
 .chat-main-area {
@@ -575,6 +655,18 @@ body {
     .chat-header {
         font-size: 1rem;
         padding: 0 1rem;
+
+    }
+
+    .group-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        flex: 1;
+        height: 77vh;
+        
+        /* NEW: Add padding to the container */
+        padding: 1rem; 
     }
 
     .chat-sidebar-header {
@@ -592,12 +684,12 @@ body {
         padding: 1rem 1rem 0.7rem 1rem;
     }
 
-    .group-avatar {
-        width: 40px;
-        height: 40px;
+    .group-image { /* Updated from .group-avatar */
+        width: 50px;
+        height: 50px;
     }
 
-    .group-name {
+    .group-title { /* Updated from .group-name */
         font-size: 1rem;
     }
 }
@@ -609,7 +701,19 @@ body {
 
     .chat-layout {
         display: flex;
+        height: 100vh;
         flex-direction: column;
+    }
+
+    .group-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        flex: 1;
+        height: 77vh;
+        
+        /* NEW: Add padding to the container */
+        padding: 1rem; 
     }
 
     .chat-sidebar {

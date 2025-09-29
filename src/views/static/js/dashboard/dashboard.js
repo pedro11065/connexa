@@ -65,7 +65,26 @@ window.addEventListener('DOMContentLoaded', function () {
             .then(r => r.json())
             .then(d => {
                 if (d.success && Array.isArray(d.data) && d.data.length > 0) {
-                    window.Group?.renderDashboard?.(d.data);
+                    // This is a fallback renderer. A dedicated Group.js module would be better.
+                    const groupList = document.querySelector('.group-list');
+                    if (groupList) {
+                        groupList.innerHTML = d.data.map(group => {
+                            if (!group) return '';
+                            
+                            // New HTML structure for the group item
+                            return `
+                                <li class="group-item" data-group-id="${group.id_grupo}">
+                                    <div class="group-info">
+                                        <div class="group-title">${group.materia || 'Grupo sem título'}</div>
+                                        <div class="group-desc">${group.objetivo || 'Sem objetivo'}</div>
+                                    </div>
+                                    <div class="group-image">
+                                        <img src="${group.image_url || '/static/images/stock/group-stock.jpg'}" alt="Group Image">
+                                    </div>
+                                </li>
+                            `;
+                        }).join('');
+                    }
                 } else {
                     window.Group?.renderNoGroupPage?.();
                 }
@@ -85,6 +104,15 @@ window.addEventListener('DOMContentLoaded', function () {
         const backBtn = e.target.closest('.chat-back-btn');
         if (backBtn) {
             window.backToGroupsMobile();
+        }
+    });
+
+    // NEW: Event listener for the create group button
+    document.body.addEventListener('click', function(e) {
+        const createBtn = e.target.closest('.create-group-btn');
+        if (createBtn) {
+            console.log('Create group button clicked. Open modal here.');
+            // Example: window.Modal.open('create-group-modal');
         }
     });
 
