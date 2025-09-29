@@ -1,6 +1,8 @@
 function isMobileDevice() {
     return window.innerWidth <= 600 || /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
 }
+// Expose for other modules (e.g., chat.js)
+window.isMobileDevice = isMobileDevice;
 
 // Mostra o chat e esconde a lista de grupos (mobile)
 function showChatArea() {
@@ -71,24 +73,20 @@ window.addEventListener('DOMContentLoaded', function () {
             .catch(() => window.Group?.renderNoGroupPage?.());
     }
 
-    // Adiciona listeners para alternar entre grupos e chat no mobile
-    if (isMobileDevice()) {
-        // Quando clicar em um grupo, mostra o chat
-        document.body.addEventListener('click', function (e) {
-            const groupItem = e.target.closest('.group-item');
-            if (groupItem) {
-                window.openGroupMobile();
-            }
-        });
+    // Always delegate; functions themselves check isMobileDevice()
+    document.body.addEventListener('click', function (e) {
+        const groupItem = e.target.closest('.group-item');
+        if (groupItem) {
+            window.openGroupMobile();
+        }
+    });
 
-        // Quando clicar no botão voltar do chat, volta para lista de grupos
-        document.body.addEventListener('click', function (e) {
-            const backBtn = e.target.closest('.chat-back-btn');
-            if (backBtn) {
-                window.backToGroupsMobile();
-            }
-        });
-    }
+    document.body.addEventListener('click', function (e) {
+        const backBtn = e.target.closest('.chat-back-btn');
+        if (backBtn) {
+            window.backToGroupsMobile();
+        }
+    });
 
     // NEW: aplica estado inicial correto
     applyMobileLayout();

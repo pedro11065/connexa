@@ -104,7 +104,7 @@ class Groups:
 
                 return True, grupos
             
-            return {
+            return True, {
                         "id_grupo": data[0][0],
                         "id_criador": data[0][1],
                         "materia": data[0][2],
